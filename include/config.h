@@ -1,89 +1,63 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-
 #include <fstream>
 #include <vector>
 #include <map>
-#include <iostream> //std::cerr
-#include <algorithm> //std::reverse std::find
-#include <boost/filesystem.hpp>
+#include <iterator>
 
 
-namespace filesystem = boost::filesystem;
-
-
-class Config
-{
-private:
-    typedef std::vector<filesystem::path> path_vec;
+class Config{
     typedef std::vector<std::string> string_vec;
-    
-    struct
-    {
-        std::fstream io;
-        filesystem::path dir;
-        filesystem::path file;
-        filesystem::path full;
-    } path;
 
-public:    
-    enum SECTION
-    {
+ public:
+    enum SECTION{
         GLOBAL = 0,
-        SUB_CONFIG = 1,
-        TEXT_MODULE = 2
-    };
-
-    
-    const std::map<SECTION, std::string> sections_map
-    {
-        { GLOBAL, ".mngx"},
-        { SUB_CONFIG, ".sub_config" },
-        { TEXT_MODULE, ".text_module" }
-    };
-
-    const std::map<std::string, SECTION> reverse_section_map
-    {
-        { ".mngx", GLOBAL },
-        { ".sub_config", SUB_CONFIG },
-        { ".text_module", TEXT_MODULE }
+        MAJOR = 1,
+        SUB_CONFIG = 2
     };
 
 private:
-   
+    const std::map<SECTION, std::string> section_string_map{
+        { GLOBAL, ".mngx" },
+        { MAJOR, ".major" },
+        { SUB_CONFIG, ".sub-config"}
+    };
 
-    
-public:
+    const std::map<std::string, SECTION> string_section_map{
+        { ".mngx", GLOBAL },
+        { ".major", MAJOR },
+        { ".sub-config", SUB_CONFIG }
+    };
+
+ public:
     Config();
+    Config(const std::string&);
     ~Config();
 
-    bool set_path();
-    bool set_path(const std::string&);
-    bool set_path(const filesystem::path&);
+    Config& operator=(const Config&);
+    Config& operator=(const std::string&);
+    
+    void creat();
+    void creat(const std::string&);
+    bool add_row(const SECTION, const std::string&);
+    bool remove_row(const SECTION, const std::string&);
 
-    bool creat();
-    void add_row(const SECTION, const std::string&);
-    void remove_row(const SECTION, const std::string&);
+    string_vec get_section(const SECTION);
+    std::string get_major();
+    
+    void clear();
+    bool status() const;
 
-    void take_directories(const SECTION, path_vec&);
-    
-private:
-    void manage_input(const filesystem::path&);
-    filesystem::path default_dir();
-    
-    bool is_repeat(const std::string&, const std::string&);
-    
-    template<class Dir, class File = std::string>
-        void assign_path(const Dir& dir, const File& file = "MNGConfig.txt")
-    {
-        path.dir = dir;
-        path.file = file;
-        path.full = path.dir;
-        path.full += path.file;
-    }
+ private:
+    struct{
+        std::fstream io;
+        std::string name;
+    } file;
+
+    bool section_exist(const SECTION);
+    bool is_repeat(const SECTION, const std::string&);
 };
-
 
 
 #endif //CONFIG_H
