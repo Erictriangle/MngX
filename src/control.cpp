@@ -36,92 +36,82 @@ const std::map<std::string, Control::COMMAND_FLAG> Control::config_commands_map{
 
 
 void
-Control::exec_command(Control& control, Directory& directory, Config& config){
+Control::exec_command(Control& control, Config_Directory& config_directory){
+    Config config(config_directory.take_default_path());
     command cmd = control.get_command();
-    auto flag = flag_command_map.find(cmd.name);
-    
-    switch(flag->second){
+
+    auto key = flag_command_map.find(cmd.name);
+
+    switch(key->second){
     case UNKNOWN_COMMAND:
         break;
-        
+
     case HELP:
-        if(cmd.arguments.empty())
-            screen::help();
-        else
-            exec_help(cmd.arguments);
+        exec_help(cmd.arguments);
         break;
-        
+
     case CONFIG:
-        if(cmd.arguments.empty())
-            config = directory.get_default_config_path();
-        else
-            exec_config(cmd.arguments, config);
+        exec_config(cmd.arguments, config, config_directory);
         break;
-        
+
     default:
-        throw "exec_command exception"; //TODO  - exceptions handling
-        break;
+        throw " -=[ EXCEPTION ]=-  exec_command exceptions!"; 
     }
 }
 
 
 void
-Control::exec_help(string_deq& input){
-    auto cmd = help_map.find(input.front());
-    
-    switch(cmd->second){
+Control::exec_help(string_deq& cmd){
+    if(cmd.empty()){
+        screen::help();
+        return;
+    }
+
+    auto key = help_map.find(cmd.front());
+    if(key == help_map.end()){
+        screen::incorrect_subcommand("-h | --help", cmd.front());
+        return;
+    }
+
+    switch(key->second){
     case UNKNOWN_COMMAND:
         break;
-        
+
     case CONFIG:
         screen::help_config();
         break;
         
     default:
-        screen::incorrect_subcommand("-h | --help", input.front());
-        break;
+        throw " -=[ EXCEPTION ]=-  exec_help exception!";
     }
 }
 
 
 void
-Control::exec_config(string_deq& input, Config& config){
-    Directory directory;
-    auto cmd = config_commands_map.find(input.front());
-    input.pop_front();
+Control::exec_config(string_deq& cmd, Config& config, Config_Directory& config_directory){
+    if(cmd.empty()){
+        screen::bad_arguments_number("-c | --config");
+        return;
+    }
 
-    switch(cmd->second){
+    Config::SECTION section = Config::GLOBAL;
+    auto key = config_commands_map.find(cmd.front());
+    if(key == config_commands_map.end()){
+        screen::incorrect_subcommand("-c | --config", cmd.front());
+        return;
+    }
+
+    switch(key->second){
     case UNKNOWN_COMMAND:
         break;
-        
+
     case CREAT:
-        if(input.empty())
-            config.creat();
-        else
-            while(!input.empty()){
-                directory = input.front();
-                config.creat(directory.get_config_path());
-                input.pop_front();
-            }    
-        break; //CREAT
-
-    case LOAD:
-        if(input.empty())
-            directory = directory.get_default_config_path();
-        else
-            
-        break;
         
-    case ADD_DIRECTORY:
-        break;
         
-    case REMOVE_DIRECTORY:
-        break;
-
+        
     default:
-        screen::incorrect_subcommand("-c | --config", input.front());
-        break;
-    }    
+        throw " -=[ EXCEPTION ]=-  exec_config exception!";
+    }
 }
 
 

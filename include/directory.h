@@ -3,51 +3,45 @@
 
 
 #include <fstream>
+#include <string>
 
 #include <boost/filesystem.hpp>
 
 
 class Directory{
-    typedef boost::filesystem::path path;
-
-    //Data
-    const std::string FILENAME = "MngConfig.txt";
-
+protected:
     struct{
-        std::string directory;
-        std::string path;
-    } config, default_config;
+        boost::filesystem::path directory;
+        boost::filesystem::path file;
+    } path;
 
     std::string username;
 
-    //Constructors
+    
  public:
-    Directory();
+    Directory() = default;
     Directory(const std::string&);
+    Directory(const Directory&);
     ~Directory() = default;
-private:
-    void set_default_config_path();
 
-    //Operators
-public:
-    Directory& operator=(const Directory&);
     Directory& operator=(const std::string&);
+    Directory& operator=(const Directory&);
 
-    //Method
-public:
-    void set_config_path(const std::string&);
-    
-    const std::string get_default_config_path();
-    const std::string get_config_path();
+    void set_input(const std::string&);
+    void copy(const Directory&);
 
-    bool default_config_file_exist();
-    
-private:
-    bool is_root();
-    std::string add_filename(const path&);
-    std::string change_extension(const path&);
+    const std::string get_directory();
+    const std::string get_filename();
+    const std::string get_path();
+    const std::string get_username();
+
+
+protected:
+    void clear();
+    bool root();
 
 };
+
 
 
 #endif //DIRECTORY_H

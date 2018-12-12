@@ -2,6 +2,8 @@
 #define CONTROL_H
 
 #include "directory.h"
+#include "config_directory.h"
+#include "directory_structure.h"
 #include "config.h"
 #include "screen.h"
 
@@ -39,9 +41,9 @@ public:
     static const std::map<std::string, COMMAND_FLAG> config_commands_map;
 
     //Static method
-    static void exec_command(Control&, Directory&, Config&);
+    static void exec_command(Control&, Config_Directory&);
     static void exec_help(std::deque<std::string>&);
-    static void exec_config(std::deque<std::string>&, Config&);
+    static void exec_config(std::deque<std::string>&, Config&, Config_Directory&);
 
 private:
     typedef std::deque<std::string> string_deq;
