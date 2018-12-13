@@ -158,24 +158,6 @@ Config::get_section(const SECTION section){
 }
 
 
-std::string
-Config::get_major(){
-    if(!status())
-        throw "Config not init exception"; // TODO - exception handling
-
-    std::string buffer;
-
-    file.io.open(file.name, std::ios::in);
-    while(file.io >> buffer && buffer != ".major");
-    file.io >> buffer;
-    if(auto key = string_section_map.count(buffer)) //if section is empty 
-        return "";
-    file.io.close();
-
-    return buffer;
-}
-
-
 void
 Config::clear(){
     file.name.clear();

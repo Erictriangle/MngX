@@ -1,0 +1,153 @@
+\hypertarget{class_control}{}\section{Control Class Reference}
+\label{class_control}\index{Control@{Control}}
+
+
+Input and control flow managment.  
+
+
+
+
+{\ttfamily \#include $<$control.\+h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_control_a611d69b6e2dd463089387b8ef867e939}\label{class_control_a611d69b6e2dd463089387b8ef867e939}} 
+enum {\bfseries C\+O\+M\+M\+A\+N\+D\+\_\+\+F\+L\+AG} \{ \newline
+{\bfseries U\+N\+K\+N\+O\+W\+N\+\_\+\+C\+O\+M\+M\+A\+ND} = 0, 
+{\bfseries H\+E\+LP} = 1, 
+{\bfseries C\+O\+N\+F\+IG} = 2, 
+{\bfseries C\+R\+E\+AT} = 100, 
+\newline
+{\bfseries L\+O\+AD} = 101, 
+{\bfseries A\+D\+D\+\_\+\+D\+I\+R\+E\+C\+T\+O\+RY} = 102, 
+{\bfseries R\+E\+M\+O\+V\+E\+\_\+\+D\+I\+R\+E\+C\+T\+O\+RY} = 103
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_control_a3201b6907d22e4034c0eceaf38d78449}\label{class_control_a3201b6907d22e4034c0eceaf38d78449}} 
+\mbox{\hyperlink{class_control_a3201b6907d22e4034c0eceaf38d78449}{Control}} (const int, char $\ast$$\ast$)
+\begin{DoxyCompactList}\small\item\em manage input from stdin \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_a8cc17820380c76b49979134fb2bb0280}\label{class_control_a8cc17820380c76b49979134fb2bb0280}} 
+{\bfseries Control} (const std\+::string \&)
+\item 
+\mbox{\Hypertarget{class_control_a2c2cb5a17c8a125350c543097b188f67}\label{class_control_a2c2cb5a17c8a125350c543097b188f67}} 
+{\bfseries Control} (const \mbox{\hyperlink{class_control}{Control}} \&)
+\item 
+\mbox{\Hypertarget{class_control_a84586bbffaee27751ae8a4004c1f3a5e}\label{class_control_a84586bbffaee27751ae8a4004c1f3a5e}} 
+\mbox{\hyperlink{class_control}{Control}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_control}{Control}} \&)
+\item 
+\mbox{\Hypertarget{class_control_af158514e9f3c5bdd6a31ec409d48dc3b}\label{class_control_af158514e9f3c5bdd6a31ec409d48dc3b}} 
+\mbox{\hyperlink{class_control}{Control}} \& {\bfseries operator=} (const std\+::string \&)
+\item 
+\mbox{\Hypertarget{class_control_a65c77a675ccc4a39476354cf1222419a}\label{class_control_a65c77a675ccc4a39476354cf1222419a}} 
+\mbox{\hyperlink{class_control}{Control}} \& \mbox{\hyperlink{class_control_a65c77a675ccc4a39476354cf1222419a}{operator+=}} (const \mbox{\hyperlink{class_control}{Control}} \&)
+\begin{DoxyCompactList}\small\item\em add commands and incorrect\+\_\+flags \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_aacf7ffe575257d1fb7a8183e53881fb8}\label{class_control_aacf7ffe575257d1fb7a8183e53881fb8}} 
+\mbox{\hyperlink{class_control}{Control}} \& \mbox{\hyperlink{class_control_aacf7ffe575257d1fb7a8183e53881fb8}{operator+=}} (const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em add commands and incorrect\+\_\+flags \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_a17fc1437bd16b3c299b2c9d24e69e4e6}\label{class_control_a17fc1437bd16b3c299b2c9d24e69e4e6}} 
+bool \mbox{\hyperlink{class_control_a17fc1437bd16b3c299b2c9d24e69e4e6}{set\+\_\+argv}} (const int, char $\ast$$\ast$)
+\begin{DoxyCompactList}\small\item\em manage input from stdin \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_a6292968ec14391686b392a66dd8c7029}\label{class_control_a6292968ec14391686b392a66dd8c7029}} 
+bool {\bfseries set\+\_\+input} (const std\+::string \&)
+\item 
+\mbox{\Hypertarget{class_control_abf673cb93f661b8b044c1c7f3f627a77}\label{class_control_abf673cb93f661b8b044c1c7f3f627a77}} 
+std\+::string \mbox{\hyperlink{class_control_abf673cb93f661b8b044c1c7f3f627a77}{get\+\_\+incorrect\+\_\+flag}} ()
+\begin{DoxyCompactList}\small\item\em return front and pop\+\_\+front \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_abd01cc233279071e4425c31a6a394bcf}\label{class_control_abd01cc233279071e4425c31a6a394bcf}} 
+bool \mbox{\hyperlink{class_control_abd01cc233279071e4425c31a6a394bcf}{status}} () const
+\begin{DoxyCompactList}\small\item\em return incorrect\+\_\+flags.\+empty(); \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_a12a2da2687aee8950d75060225ae5a7a}\label{class_control_a12a2da2687aee8950d75060225ae5a7a}} 
+bool \mbox{\hyperlink{class_control_a12a2da2687aee8950d75060225ae5a7a}{empty}} () const
+\begin{DoxyCompactList}\small\item\em return commands.\+empty(); \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_a61a69b63095c78c8de94e83a1e72a1a6}\label{class_control_a61a69b63095c78c8de94e83a1e72a1a6}} 
+void \mbox{\hyperlink{class_control_a61a69b63095c78c8de94e83a1e72a1a6}{clear}} ()
+\begin{DoxyCompactList}\small\item\em clear commands and incorrect\+\_\+flags \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_a3ce5920b84869542d1b5bca6ea925abc}\label{class_control_a3ce5920b84869542d1b5bca6ea925abc}} 
+command \mbox{\hyperlink{class_control_a3ce5920b84869542d1b5bca6ea925abc}{get\+\_\+command}} ()
+\begin{DoxyCompactList}\small\item\em return front and pop\+\_\+front \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_control_a280ccb1e36613b727231c8d38a4c6dad}\label{class_control_a280ccb1e36613b727231c8d38a4c6dad}} 
+static void \mbox{\hyperlink{class_control_a280ccb1e36613b727231c8d38a4c6dad}{exec\+\_\+command}} (\mbox{\hyperlink{class_control}{Control}} \&, \mbox{\hyperlink{class_config___directory}{Config\+\_\+\+Directory}} \&)
+\begin{DoxyCompactList}\small\item\em choose other method for flag and pass arguments; \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_aa17c212eab1ec668968dafad931c0520}\label{class_control_aa17c212eab1ec668968dafad931c0520}} 
+static void \mbox{\hyperlink{class_control_aa17c212eab1ec668968dafad931c0520}{exec\+\_\+help}} (std\+::deque$<$ std\+::string $>$ \&)
+\begin{DoxyCompactList}\small\item\em executa command for -\/h $\vert$ --help flag \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_control_afb6e016e356c5203f7cb427f688bf3c2}\label{class_control_afb6e016e356c5203f7cb427f688bf3c2}} 
+static void \mbox{\hyperlink{class_control_afb6e016e356c5203f7cb427f688bf3c2}{exec\+\_\+config}} (std\+::deque$<$ std\+::string $>$ \&, \mbox{\hyperlink{class_config}{Config}} \&, \mbox{\hyperlink{class_config___directory}{Config\+\_\+\+Directory}} \&)
+\begin{DoxyCompactList}\small\item\em execut commad for -\/c $\vert$ --config flag \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const std\+::map$<$ std\+::string, C\+O\+M\+M\+A\+N\+D\+\_\+\+F\+L\+AG $>$ {\bfseries flag\+\_\+command\+\_\+map}
+\item 
+static const std\+::map$<$ std\+::string, C\+O\+M\+M\+A\+N\+D\+\_\+\+F\+L\+AG $>$ {\bfseries help\+\_\+map}
+\item 
+static const std\+::map$<$ std\+::string, C\+O\+M\+M\+A\+N\+D\+\_\+\+F\+L\+AG $>$ {\bfseries config\+\_\+commands\+\_\+map}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Input and control flow managment. 
+
+\mbox{\hyperlink{class_control}{Control}} class is created to manage chain of characters entered by the user. The class object take parameters from the input stream, dvivide them on commands(all commands have flag name and arguments) and gather wrong form of input in incorrect flags container.
+
+Static class methods are used to execute features from this software. 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_control_a3d28ecb8f92493cf4f5c80a0de43057e}\label{class_control_a3d28ecb8f92493cf4f5c80a0de43057e}} 
+\index{Control@{Control}!config\+\_\+commands\+\_\+map@{config\+\_\+commands\+\_\+map}}
+\index{config\+\_\+commands\+\_\+map@{config\+\_\+commands\+\_\+map}!Control@{Control}}
+\subsubsection{\texorpdfstring{config\+\_\+commands\+\_\+map}{config\_commands\_map}}
+{\footnotesize\ttfamily const std\+::map$<$ std\+::string, Control\+::\+C\+O\+M\+M\+A\+N\+D\+\_\+\+F\+L\+AG $>$ Control\+::config\+\_\+commands\+\_\+map\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    \{ \textcolor{stringliteral}{"UNKNOWN COMMAND"}, UNKNOWN\_COMMAND\},
+    \{ \textcolor{stringliteral}{"creat"}, CREAT\},
+    \{ \textcolor{stringliteral}{"load"}, LOAD\},
+    \{ \textcolor{stringliteral}{"add-directory"}, ADD\_DIRECTORY\},
+    \{ \textcolor{stringliteral}{"remove-directory"}, REMOVE\_DIRECTORY\}
+\}
+\end{DoxyCode}
+\mbox{\Hypertarget{class_control_a86f2b547b8d8570c48a662fd5b0fa654}\label{class_control_a86f2b547b8d8570c48a662fd5b0fa654}} 
+\index{Control@{Control}!flag\+\_\+command\+\_\+map@{flag\+\_\+command\+\_\+map}}
+\index{flag\+\_\+command\+\_\+map@{flag\+\_\+command\+\_\+map}!Control@{Control}}
+\subsubsection{\texorpdfstring{flag\+\_\+command\+\_\+map}{flag\_command\_map}}
+{\footnotesize\ttfamily const std\+::map$<$ std\+::string, Control\+::\+C\+O\+M\+M\+A\+N\+D\+\_\+\+F\+L\+AG $>$ Control\+::flag\+\_\+command\+\_\+map\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    \{ \textcolor{stringliteral}{"UNKNOWN COMMAND"}, UNKNOWN\_COMMAND \},
+    \{ \textcolor{stringliteral}{"-h"}, HELP \},
+    \{ \textcolor{stringliteral}{"--help"}, HELP \},
+    \{ \textcolor{stringliteral}{"-c"}, CONFIG \},
+    \{ \textcolor{stringliteral}{"--config"}, CONFIG \}
+\}
+\end{DoxyCode}
+\mbox{\Hypertarget{class_control_af187d3163a4d5486567324b24897d752}\label{class_control_af187d3163a4d5486567324b24897d752}} 
+\index{Control@{Control}!help\+\_\+map@{help\+\_\+map}}
+\index{help\+\_\+map@{help\+\_\+map}!Control@{Control}}
+\subsubsection{\texorpdfstring{help\+\_\+map}{help\_map}}
+{\footnotesize\ttfamily const std\+::map$<$ std\+::string, Control\+::\+C\+O\+M\+M\+A\+N\+D\+\_\+\+F\+L\+AG $>$ Control\+::help\+\_\+map\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+\{
+    \{ \textcolor{stringliteral}{"UNKNOWN COMMAND"}, UNKNOWN\_COMMAND \},
+    \{ \textcolor{stringliteral}{"config"}, CONFIG \},
+\}
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/control.\+h\item 
+src/control.\+cpp\end{DoxyCompactItemize}

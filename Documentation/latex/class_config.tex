@@ -1,0 +1,64 @@
+\hypertarget{class_config}{}\section{Config Class Reference}
+\label{class_config}\index{Config@{Config}}
+
+
+Manage config files.  
+
+
+
+
+{\ttfamily \#include $<$config.\+h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_config_aecaa9226d0d87955e3813b7e12da5bd3}\label{class_config_aecaa9226d0d87955e3813b7e12da5bd3}} 
+enum {\bfseries S\+E\+C\+T\+I\+ON} \{ {\bfseries G\+L\+O\+B\+AL} = 0, 
+{\bfseries M\+A\+J\+OR} = 1, 
+{\bfseries S\+U\+B\+\_\+\+C\+O\+N\+F\+IG} = 2
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_config_ad74e2a92db53fa68dadf2efd0d8b59be}\label{class_config_ad74e2a92db53fa68dadf2efd0d8b59be}} 
+{\bfseries Config} (const std\+::string \&)
+\item 
+\mbox{\Hypertarget{class_config_a7467670e36e879accebd5ede185724c9}\label{class_config_a7467670e36e879accebd5ede185724c9}} 
+\mbox{\hyperlink{class_config}{Config}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_config}{Config}} \&)
+\item 
+\mbox{\Hypertarget{class_config_a6fb87004fcddb63a908a5e27f70dc014}\label{class_config_a6fb87004fcddb63a908a5e27f70dc014}} 
+\mbox{\hyperlink{class_config}{Config}} \& {\bfseries operator=} (const std\+::string \&)
+\item 
+\mbox{\Hypertarget{class_config_aef0ec22ee92ab7f39647cd22ec34e0e4}\label{class_config_aef0ec22ee92ab7f39647cd22ec34e0e4}} 
+void \mbox{\hyperlink{class_config_aef0ec22ee92ab7f39647cd22ec34e0e4}{creat}} ()
+\begin{DoxyCompactList}\small\item\em create config file in assignment path \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_aee780600cc3fb3ad239730e113379436}\label{class_config_aee780600cc3fb3ad239730e113379436}} 
+void \mbox{\hyperlink{class_config_aee780600cc3fb3ad239730e113379436}{creat}} (const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em asssing path and creat config file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a5e31b9666527f099f1a542d4ec668e40}\label{class_config_a5e31b9666527f099f1a542d4ec668e40}} 
+bool \mbox{\hyperlink{class_config_a5e31b9666527f099f1a542d4ec668e40}{add\+\_\+row}} (const S\+E\+C\+T\+I\+ON, const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em add one row in config file section \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a9db2df151d53943ec0c02358cdc6c8e0}\label{class_config_a9db2df151d53943ec0c02358cdc6c8e0}} 
+bool \mbox{\hyperlink{class_config_a9db2df151d53943ec0c02358cdc6c8e0}{remove\+\_\+row}} (const S\+E\+C\+T\+I\+ON, const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em remove one row in config file section \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a6f868d196b3590d940e91e31c98ab85b}\label{class_config_a6f868d196b3590d940e91e31c98ab85b}} 
+string\+\_\+vec \mbox{\hyperlink{class_config_a6f868d196b3590d940e91e31c98ab85b}{get\+\_\+section}} (const S\+E\+C\+T\+I\+ON)
+\begin{DoxyCompactList}\small\item\em return section content from section \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a4d4698876d10131043806b0ddd690eb3}\label{class_config_a4d4698876d10131043806b0ddd690eb3}} 
+void \mbox{\hyperlink{class_config_a4d4698876d10131043806b0ddd690eb3}{clear}} ()
+\begin{DoxyCompactList}\small\item\em clear assignment path \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a170d9cc2b65ee82abcf7f1ed91e7ee5c}\label{class_config_a170d9cc2b65ee82abcf7f1ed91e7ee5c}} 
+bool \mbox{\hyperlink{class_config_a170d9cc2b65ee82abcf7f1ed91e7ee5c}{status}} () const
+\begin{DoxyCompactList}\small\item\em return file.\+name.\+empty() \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Manage config files. 
+
+\mbox{\hyperlink{class_config}{Config}} class should be initialize with path to config file. For default path use a take\+\_\+default\+\_\+path() from a object of \mbox{\hyperlink{class_config___directory}{Config\+\_\+\+Directory}} class. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/config.\+h\item 
+src/config.\+cpp\end{DoxyCompactItemize}

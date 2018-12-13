@@ -220,9 +220,8 @@ Control::get_incorrect_flag(){
 
 bool
 Control::status() const{
-    if(incorrect_flags.empty())
-        return 1;
-    return 0;
+    return incorrect_flags.empty();
+
 }
 
 

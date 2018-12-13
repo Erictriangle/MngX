@@ -8,6 +8,14 @@
 #include <boost/filesystem.hpp>
 
 
+/*!
+ *\brief Manage directory and path
+ *
+ *Directory contain directory our directory and filename.
+ *
+ */
+
+
 class Directory{
 protected:
     struct{
@@ -27,14 +35,13 @@ protected:
     Directory& operator=(const std::string&);
     Directory& operator=(const Directory&);
 
-    void set_input(const std::string&);
+    void set_input(const std::string&); //!< change string on path and assign to directory out path
     void copy(const Directory&);
 
-    const std::string get_directory();
-    const std::string get_filename();
-    const std::string get_path();
-    const std::string get_username();
-
+    const std::string get_directory(); //!< return path.directory
+    const std::string get_filename(); //!< return path.file
+    const std::string get_path(); //!< return path.directory + path.file
+    const std::string get_username(); //!< return current username
 
 protected:
     void clear();

@@ -7,6 +7,17 @@
 #include <iterator>
 
 
+/*!
+ *\brief Manage config files
+ *
+ *
+ *Config class should be initialize with path to config file.
+ *For default path use a take_default_path() from a object of
+ *Config_Directory class.
+ *
+ */
+
+
 class Config{
     typedef std::vector<std::string> string_vec;
 
@@ -38,16 +49,15 @@ private:
     Config& operator=(const Config&);
     Config& operator=(const std::string&);
     
-    void creat();
-    void creat(const std::string&);
-    bool add_row(const SECTION, const std::string&);
-    bool remove_row(const SECTION, const std::string&);
+    void creat(); //!< create config file in assignment path
+    void creat(const std::string&); //!< asssing path and creat config file
+    bool add_row(const SECTION, const std::string&); //!< add one row in config file section
+    bool remove_row(const SECTION, const std::string&); //!< remove one row in config file section
 
-    string_vec get_section(const SECTION);
-    std::string get_major();
+    string_vec get_section(const SECTION); //!< return section content from section
     
-    void clear();
-    bool status() const;
+    void clear(); //!< clear assignment path
+    bool status() const; //!< return file.name.empty()
 
  private:
     struct{
