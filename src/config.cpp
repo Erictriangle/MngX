@@ -1,19 +1,45 @@
 #include "config.h"
 
 
+//===============
+//==STATIC_MAP==
+//=============
+
+
+const std::map<Config::SECTION, std::string> Config::section_string_map{
+    { GLOBAL, ".mngx" },
+    { MAJOR, ".major" },
+    { SUB_CONFIG, ".sub-config"}
+};
+
+
+const std::map<std::string, Config::SECTION> Config::string_section_map{
+    { ".mngx", GLOBAL },
+    { ".major", MAJOR },
+    { ".sub-config", SUB_CONFIG }
+};
+
+
+const std::map<std::string, Config::SECTION> Config::input_section_map{
+    { "global", GLOBAL },
+    { "major", MAJOR },
+    { "sub-config", SUB_CONFIG }
+}; 
+
+
 //=================
 //==CONSTRUCTORS==
 //===============
 
 
 Config::Config(){
-    file.io.exceptions(std::fstream::failbit | std::fstream::badbit);
+    file.io.exceptions( std::fstream::badbit);
 }
 
 
 Config::Config(const std::string& file_name){
     file.name = file_name;
-    file.io.exceptions(std::fstream::failbit | std::fstream::badbit);
+    file.io.exceptions( std::fstream::badbit);
 }
 
 
@@ -87,16 +113,16 @@ Config::add_row(const SECTION section, const std::string& input){
     string_vec temp_vec;
     std::string buffer;
 
-    file.io.open(file.name, std::ios::in); //file -> vector
+    file.io.open(file.name, std::ios::in, ); //file -> vector
     while(file.io >> buffer)
         temp_vec.push_back(buffer);
     file.io.close();
 
     file.io.open(file.name, std::ios::out | std::ios::trunc); //vector + input -> file
     for(auto it = temp_vec.cbegin(); it != temp_vec.cend(); it++){
-        file.io << *it << "\n";
+        file.io << *it << '\n';
         if(*it == key->second)
-            file.io << input; 
+            file.io << input << '\n'; 
     }
     file.io.close();
 
@@ -126,12 +152,12 @@ Config::remove_row(const SECTION section, const std::string& input){
     for(auto it = temp_vec.cbegin(); it != temp_vec.cend(); it++){
         if(*it == key->second){
             while(*it != input){
-                file.io << *it;
+                file.io << *it << '\n';
                 it++;
             }
             continue;
         }
-        file.io << *it;
+        file.io << *it << '\n';
     }
     file.io.close();
 
@@ -199,9 +225,11 @@ Config::is_repeat(const SECTION section, const std::string& input){
     file.io.open(file.name, std::ios::in);
     while(file.io >> buffer)
         if(buffer == key->second)
-            while(!string_section_map.count(buffer))
-                if(buffer == input)
+            while((file.io >> buffer) && !string_section_map.count(buffer))
+                if(buffer == input){
+                    file.io.close();
                     return 1;
+                }
     file.io.close();
 
     return 0;

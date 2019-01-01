@@ -61,7 +61,7 @@ screen::incorrect_flag(const std::string& flag){
 
 
 void
-screen::bad_arguments_number(const std::string& cmd){
+screen::wrong_arguments_number(const std::string& cmd){
     std::cout << "Wrong number of arguments for  " << cmd << " flag;\n";
     std::cout << "Use -h | --help <flag> if you need help.\n";
     std::cout << "\n";

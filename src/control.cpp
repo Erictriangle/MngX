@@ -2,7 +2,7 @@
 
 
 //==============
-//==INPUT_MAP==
+//==STATIC_MAP==
 //============
 
 
@@ -37,7 +37,13 @@ const std::map<std::string, Control::COMMAND_FLAG> Control::config_commands_map{
 
 void
 Control::exec_command(Control& control, Config_Directory& config_directory){
-    Config config(config_directory.take_default_path());
+    Config config;
+    
+    if(config_directory.empty())
+        config = config_directory.take_default_path();
+    else
+        config = config_directory.get_path();
+  
     command cmd = control.get_command();
 
     auto key = flag_command_map.find(cmd.name);
@@ -45,17 +51,17 @@ Control::exec_command(Control& control, Config_Directory& config_directory){
     switch(key->second){
     case UNKNOWN_COMMAND:
         break;
-
+        
     case HELP:
         exec_help(cmd.arguments);
         break;
-
+        
     case CONFIG:
         exec_config(cmd.arguments, config, config_directory);
         break;
-
+        
     default:
-        throw " -=[ EXCEPTION ]=-  exec_command exceptions!"; 
+        throw " -=[ EXCEPTION ]=-  exec_command exceptions!";
     }
 }
 
@@ -67,16 +73,12 @@ Control::exec_help(string_deq& cmd){
         return;
     }
 
-    auto key = help_map.find(cmd.front());
-    if(key == help_map.end()){
-        screen::incorrect_subcommand("-h | --help", cmd.front());
-        return;
-    }
-
-    switch(key->second){
+    auto key = take_key(help_map, cmd.front());
+    switch(key){
     case UNKNOWN_COMMAND:
+        screen::incorrect_subcommand("-h | --help", cmd.front());
         break;
-
+        
     case CONFIG:
         screen::help_config();
         break;
@@ -89,29 +91,112 @@ Control::exec_help(string_deq& cmd){
 
 void
 Control::exec_config(string_deq& cmd, Config& config, Config_Directory& config_directory){
-    if(cmd.empty()){
-        screen::bad_arguments_number("-c | --config");
+    if(exec_config_default(cmd, config, config_directory)) //creat default config file if dont exist
         return;
-    }
 
-    Config::SECTION section = Config::GLOBAL;
-    auto key = config_commands_map.find(cmd.front());
-    if(key == config_commands_map.end()){
-        screen::incorrect_subcommand("-c | --config", cmd.front());
-        return;
-    }
-
-    switch(key->second){
+    auto key = take_key(config_commands_map, cmd.front());
+    switch(key){
     case UNKNOWN_COMMAND:
+        screen::incorrect_subcommand("-c | --config", cmd.front());
         break;
 
     case CREAT:
+        exec_config_creat(cmd, config);
+        break;
+
+    case LOAD:
+        exec_config_load(cmd, config_directory);
+        break;
+
+    case ADD_DIRECTORY:
+        exec_config_add_row(cmd, config);
+        break;
         
-        
-        
+    case REMOVE_DIRECTORY:
+        exec_config_remove_row(cmd, config);
+        break;
+       
     default:
-        throw " -=[ EXCEPTION ]=-  exec_config exception!";
+        throw " -=[ EXCEPTION ]=-  exec_config exception! \n"; //TODO - exception handling
     }
+}
+    
+
+
+bool
+Control::exec_config_default(const string_deq& cmd, Config& config,
+                             Config_Directory& config_directory){
+    if(!cmd.empty())
+        return 0;
+    else if(config_directory.is_file())
+        return 1;
+    else
+        config.creat(config_directory.take_default_path());
+    return 1;
+}
+
+
+void
+Control::exec_config_creat(const string_deq& cmd, Config& config){
+    if(cmd.size() != 2)
+        screen::wrong_arguments_number("-c | --config");
+    else{
+        Config_Directory cd(cmd[1]);
+        config.creat(cd.get_path());
+    }
+}
+
+
+void
+Control::exec_config_load(const string_deq& cmd, Config_Directory& config_directory){
+    if(cmd.size() != 2)
+        screen::wrong_arguments_number("-c | --config");
+    else
+        config_directory.set_path(cmd[1]);
+}
+
+
+void
+Control::exec_config_add_row(string_deq& cmd, Config& config){
+    Config::SECTION section = Config::GLOBAL;
+    cmd.pop_front(); //first is add_directory
+
+    while(!cmd.empty()){
+        if(Config::input_section_map.find(cmd.front()) != Config::input_section_map.end())
+            section = Config::input_section_map.find(cmd.front())->second;
+        else
+            config.add_row(section, cmd.front());
+        cmd.pop_front();
+    }
+}
+
+
+void
+Control::exec_config_remove_row(string_deq& cmd, Config& config){
+    Config::SECTION section = Config::GLOBAL;;
+    cmd.pop_front(); //first is add_directory
+
+    while(!cmd.empty()){
+        if(Config::input_section_map.find(cmd.front()) != Config::input_section_map.end())
+            section = Config::input_section_map.find(cmd.front())->second;
+            else
+                config.remove_row(section, cmd.front());
+            cmd.pop_front();
+    }
+}
+
+
+//==============
+//==TEAMPLATE==
+//============
+
+
+template<class MAP>
+Control::COMMAND_FLAG Control::take_key(const MAP& map, const std::string& input){
+    auto key = map.find(input);
+    if(key == map.end())
+        return Control::UNKNOWN_COMMAND;
+    return key->second;
 }
 
 

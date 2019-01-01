@@ -1,9 +1,9 @@
 #include "config_directory.h"
 
 
-//===========
-//==PUBLIC==
-//=========
+//=================
+//==CONSTRUCTORS==
+//===============
 
 
 Config_Directory::Config_Directory(){
@@ -12,9 +12,32 @@ Config_Directory::Config_Directory(){
 }
 
 
+Config_Directory::Config_Directory(const std::string& input){
+    set_default_path();
+    check_default_path();
+    set_path(input);
+}
+
+
+//===========
+//==PUBLIC==
+//=========
+
+
+void
+Config_Directory::set_path(const std::string& input){
+    Directory::set_path(input);
+
+    if(path.file.empty())
+        path.file = _FILENAME;
+    else if(path.file.extension() != _EXTENSION)
+        path.file = change_extension(path.file);
+}
+
+
 std::string
 Config_Directory::take_default_path(){
-    return default_path.directory.native() + default_path.file.native();
+    return default_path.directory.native() + "/" + default_path.file.native();
 }
 
 

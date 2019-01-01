@@ -29,17 +29,10 @@ class Config{
     };
 
 private:
-    const std::map<SECTION, std::string> section_string_map{
-        { GLOBAL, ".mngx" },
-        { MAJOR, ".major" },
-        { SUB_CONFIG, ".sub-config"}
-    };
-
-    const std::map<std::string, SECTION> string_section_map{
-        { ".mngx", GLOBAL },
-        { ".major", MAJOR },
-        { ".sub-config", SUB_CONFIG }
-    };
+    static const std::map<SECTION, std::string> section_string_map;
+    static const std::map<std::string, SECTION> string_section_map;
+public:
+    static const std::map<std::string, SECTION> input_section_map;
 
  public:
     Config();
@@ -55,7 +48,7 @@ private:
     bool remove_row(const SECTION, const std::string&); //!< remove one row in config file section
 
     string_vec get_section(const SECTION); //!< return section content from section
-    
+
     void clear(); //!< clear assignment path
     bool status() const; //!< return file.name.empty()
 

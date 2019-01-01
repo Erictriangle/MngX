@@ -21,6 +21,10 @@ int main(int argc, char** argv)
             Control::exec_command(control, config_directory);
         }
     }
+    catch(const std::system_error& e){
+        std::cout << e.what() << std::endl;
+
+    }
     catch(const std::string e){
         std::cerr << "Do zrobienia: " << e << std::endl;
     }

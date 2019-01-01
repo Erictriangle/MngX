@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 file(GLOB SOURCES "src/*.cpp")
-file(GLOB UNIT_TEST "Testing/*.cpp")
+file(GLOB UNIT_TEST "ut/*.cpp")
 include_directories(include)
 
 
@@ -45,8 +45,7 @@ if(Boost_FOUND)
 
 
     #UNIT_TEST
-    #control_test.h
-    #add_executable(control_test ${UNIT_TEST} ${SOURCES})
-    #target_link_libraries(control_test ${Boost_LIBRARIES})
+    add_executable(ut_control ${UNIT_TEST} ${SOURCES})
+    target_link_libraries(ut_control ${Boost_LIBRARIES})
 endif()
 

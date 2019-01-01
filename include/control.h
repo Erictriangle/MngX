@@ -35,6 +35,9 @@ private:
         std::deque<std::string> arguments;
     };
 
+    typedef std::deque<std::string> string_deq;
+    typedef std::deque<command> command_deq;
+    
 public:
     enum COMMAND_FLAG{
         //flags
@@ -48,7 +51,9 @@ public:
         ADD_DIRECTORY = 102,
         REMOVE_DIRECTORY = 103
     };
-    
+
+   
+public:   
     //Collection for interpreter
     static const std::map<std::string, COMMAND_FLAG> flag_command_map;
     static const std::map<std::string, COMMAND_FLAG> help_map;
@@ -56,14 +61,21 @@ public:
 
     //Static method
     static void exec_command(Control&, Config_Directory&); //!< choose other method for flag and pass arguments;
-    static void exec_help(std::deque<std::string>&); //!< executa command for -h | --help flag
-    static void exec_config(std::deque<std::string>&, Config&, Config_Directory&);
-    //!< execut commad for -c | --config flag
 
-private:
-    typedef std::deque<std::string> string_deq;
-    typedef std::deque<command> command_deq;
     
+private:
+    static void exec_help(string_deq&);
+    static void exec_config(string_deq&, Config&, Config_Directory&);
+    static bool exec_config_default(const string_deq&, Config&, Config_Directory&);
+    static void exec_config_creat(const string_deq&, Config&);
+    static void exec_config_load(const string_deq&, Config_Directory&);
+    static void exec_config_add_row(string_deq&, Config&);
+    static void exec_config_remove_row(string_deq&, Config&);
+
+
+    template<class MAP>
+    static COMMAND_FLAG take_key(const MAP&, const std::string&);
+
 public:
     Control() = default;
     Control(const int, char**);  //!< manage input from stdin

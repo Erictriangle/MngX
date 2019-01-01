@@ -7,7 +7,7 @@
 
 
 Directory::Directory(const std::string& input){
-    set_input(input);
+    set_path(input);
 }
 
 
@@ -23,7 +23,7 @@ Directory::Directory(const Directory& dir){
 
 Directory&
 Directory::operator=(const std::string& input){
-    set_input(input);
+    set_path(input);
     return *this;
 }
 
@@ -41,7 +41,7 @@ Directory::operator=(const Directory& dir){
 
 
 void
-Directory::set_input(const std::string& input){
+Directory::set_path(const std::string& input){
     namespace fs = boost::filesystem;
 
     clear();
@@ -79,7 +79,7 @@ Directory::copy(const Directory& dir){
 
 const std::string
 Directory::get_directory(){
-    return path.directory.native();
+    return path.directory.native() + "/";
 }
 
 
@@ -91,7 +91,7 @@ Directory::get_filename(){
 
 const std::string
 Directory::get_path(){
-    return path.directory.native() + path.file.native();
+    return path.directory.native() + "/"  + path.file.native();
 }
 
 
@@ -100,6 +100,17 @@ Directory::get_username(){
     return username;
 }
 
+
+bool
+Directory::empty(){
+    return path.directory.empty();
+}
+
+
+bool
+Directory::is_file(){
+    return boost::filesystem::is_regular_file(path.directory.native() + path.file.native());
+}
 
 
 //============
@@ -116,7 +127,8 @@ Directory::clear(){
 
 bool
 Directory::root(){
-    if(getenv("USER") == "root")
+    std::string user = getenv("USER");
+    if(user.compare("ROOT"))
         return 1;
     return 0;
 }

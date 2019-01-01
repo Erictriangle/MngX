@@ -5,7 +5,7 @@
 #include "directory.h"
 
 
-class Config_Directory : Directory{  
+class Config_Directory : public Directory{  
     const std::string _FOLDER = "/.mngx/";
     const std::string _FILENAME = "MngConfig.txt";
     const std::string _EXTENSION = ".txt";
@@ -18,8 +18,10 @@ class Config_Directory : Directory{
     std::string username;
 public:
     Config_Directory();
+    Config_Directory(const std::string& path);
     ~Config_Directory() = default;
 
+    void set_path(const std::string&);
     std::string take_default_path();
     
 private:

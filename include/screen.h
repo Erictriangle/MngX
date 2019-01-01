@@ -22,7 +22,7 @@ namespace screen{
     //========
     
     void incorrect_flag(const std::string& flag);
-    void bad_arguments_number(const std::string& cmd);
+    void wrong_arguments_number(const std::string& cmd);
     void incorrect_subcommand(const std::string& flag, const std::string& cmd);
 
 };
