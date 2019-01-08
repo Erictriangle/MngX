@@ -4,32 +4,31 @@
 #include <memory>
 
 
-int main(int argc, char** argv)
-{
-    if(argc == 1){
-        screen::status();
-        return 0;
-    }
+int main(int argc, char** argv){
+	try {
+		if(argc == 1){
+			screen::status();
+			return 0;
+		}
 
-    try{
-        Control control(argc, argv);
-        Config_Directory config_directory;
+		Control control(argc, argv);
+		Config_Directory config_directory;
+		Config config(config_directory.get_path());
 
-        
-        
-        while(!control.empty() && control.status()){
-            Control::exec_command(control, config_directory);
-        }
-    }
-    catch(const std::system_error& e){
-        std::cout << e.what() << std::endl;
+		//creat default config file if doesn't exist.
+		Control::exec_config_default(config, config_directory); 
 
-    }
-    catch(const std::string e){
-        std::cerr << "Do zrobienia: " << e << std::endl;
-    }
+		while(!control.empty() && control.status())
+			Control::exec_command(control, config, config_directory);
+	}
+	catch(const std::system_error& e){
+		std::cout << e.what() << std::endl;
+	}
+	catch(const std::string e){
+	std::cerr << "Do zrobienia: " << e << std::endl;
+	}
     
-    return 0;
+	return 0;
 }
 
 

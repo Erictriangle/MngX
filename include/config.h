@@ -22,10 +22,11 @@ class Config{
     typedef std::vector<std::string> string_vec;
 
  public:
-    enum SECTION{
-        GLOBAL = 0,
-        MAJOR = 1,
-        SUB_CONFIG = 2
+	 enum SECTION {
+		 GLOBAL = 0,
+		 MAJOR = 1,
+		 SUB_CONFIG = 2,
+		 ARCHIVE = 3
     };
 
 private:

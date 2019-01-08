@@ -9,6 +9,7 @@
 Config_Directory::Config_Directory(){
     set_default_path();
     check_default_path();
+	set_path(default_path.directory.native() + default_path.file.native());
 }
 
 
@@ -36,7 +37,7 @@ Config_Directory::set_path(const std::string& input){
 
 
 std::string
-Config_Directory::take_default_path(){
+Config_Directory::get_default_path(){
     return default_path.directory.native() + "/" + default_path.file.native();
 }
 

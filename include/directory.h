@@ -25,7 +25,12 @@ protected:
 
     std::string username;
 
-    
+public:
+	static bool is_file(const std::string&);
+	static bool is_file(const Directory&);
+	static bool is_directory(const std::string&);
+	static bool is_directory(const Directory&);
+
 public:
     Directory() = default;
     Directory(const std::string&);
@@ -38,13 +43,13 @@ public:
     void set_path(const std::string&); //!< change string on path and assign to directory out path
     void copy(const Directory&);
 
-    const std::string get_directory(); //!< return path.directory
-    const std::string get_filename(); //!< return path.file
-    const std::string get_path(); //!< return path.directory + path.file
-    const std::string get_username(); //!< return current username
+    const std::string get_directory() const; //!< return path.directory
+    const std::string get_filename() const; //!< return path.file
+    const std::string get_path() const; //!< return path.directory + path.file
+    const std::string get_username() const; //!< return current username
 
-    bool empty(); //!< return path.directory.empty() 
-    bool is_file();
+    bool empty() const; //!< return path.directory.empty() 
+
 protected:
     void clear();
     bool root();

@@ -11,13 +11,16 @@ const std::map<std::string, Control::COMMAND_FLAG> Control::flag_command_map{
     { "-h", HELP },
     { "--help", HELP },
     { "-c", CONFIG },
-    { "--config", CONFIG }
+    { "--config", CONFIG },
+	{ "-a", ARCHIVE },
+	{ "--archive", ARCHIVE }
 };
 
 
 const std::map<std::string, Control::COMMAND_FLAG> Control::help_map{
     { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
     { "config", CONFIG },
+	{ "archive", ARCHIVE }
 };
 
 
@@ -36,16 +39,10 @@ const std::map<std::string, Control::COMMAND_FLAG> Control::config_commands_map{
 
 
 void
-Control::exec_command(Control& control, Config_Directory& config_directory){
-    Config config;
-    
-    if(config_directory.empty())
-        config = config_directory.take_default_path();
-    else
-        config = config_directory.get_path();
+Control::exec_command(Control& control, Config& config,
+	Config_Directory& config_directory){
   
     command cmd = control.get_command();
-
     auto key = flag_command_map.find(cmd.name);
 
     switch(key->second){
@@ -59,6 +56,10 @@ Control::exec_command(Control& control, Config_Directory& config_directory){
     case CONFIG:
         exec_config(cmd.arguments, config, config_directory);
         break;
+		
+	case ARCHIVE:
+		exec_archive(config);
+		break;
         
     default:
         throw " -=[ EXCEPTION ]=-  exec_command exceptions!";
@@ -82,6 +83,10 @@ Control::exec_help(string_deq& cmd){
     case CONFIG:
         screen::help_config();
         break;
+
+	case ARCHIVE:
+		//screen::help_archive();
+		break;
         
     default:
         throw " -=[ EXCEPTION ]=-  exec_help exception!";
@@ -91,9 +96,6 @@ Control::exec_help(string_deq& cmd){
 
 void
 Control::exec_config(string_deq& cmd, Config& config, Config_Directory& config_directory){
-    if(exec_config_default(cmd, config, config_directory)) //creat default config file if dont exist
-        return;
-
     auto key = take_key(config_commands_map, cmd.front());
     switch(key){
     case UNKNOWN_COMMAND:
@@ -123,16 +125,10 @@ Control::exec_config(string_deq& cmd, Config& config, Config_Directory& config_d
     
 
 
-bool
-Control::exec_config_default(const string_deq& cmd, Config& config,
-                             Config_Directory& config_directory){
-    if(!cmd.empty())
-        return 0;
-    else if(config_directory.is_file())
-        return 1;
-    else
-        config.creat(config_directory.take_default_path());
-    return 1;
+void
+Control::exec_config_default( Config& config, Config_Directory& config_directory){
+    if(!Directory::is_file(config_directory))
+        config.creat(config_directory.get_default_path());
 }
 
 
@@ -183,6 +179,14 @@ Control::exec_config_remove_row(string_deq& cmd, Config& config){
                 config.remove_row(section, cmd.front());
             cmd.pop_front();
     }
+}
+
+
+void
+Control::exec_archive(Config& config) {
+	Archive archive(config.get_section(Config::ARCHIVE));
+	if (!archive.creat_archive())
+		std::cout << archive.get_error() << std::endl;
 }
 
 

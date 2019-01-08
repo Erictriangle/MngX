@@ -1,6 +1,35 @@
 #include "directory.h"
 
 
+//===========
+//==STATIC==
+//=========
+
+
+bool
+Directory::is_file(const std::string& input){
+	return boost::filesystem::is_regular_file(input);
+}
+
+
+bool 
+Directory::is_file(const Directory& input) {
+	return boost::filesystem::is_regular_file(input.get_path());
+}
+
+
+bool
+Directory::is_directory(const std::string& input) {
+	return boost::filesystem::is_directory(input);
+}
+
+
+bool
+Directory::is_directory(const Directory& input) {
+	return boost::filesystem::is_directory(input.get_path());
+}
+
+
 //=================
 //==CONSTRUCTORS==
 //===============
@@ -78,38 +107,32 @@ Directory::copy(const Directory& dir){
 
 
 const std::string
-Directory::get_directory(){
+Directory::get_directory() const{
     return path.directory.native() + "/";
 }
 
 
 const std::string
-Directory::get_filename(){
+Directory::get_filename() const{
     return path.file.native();
 }
 
 
 const std::string
-Directory::get_path(){
+Directory::get_path() const{
     return path.directory.native() + "/"  + path.file.native();
 }
 
 
 const std::string
-Directory::get_username(){
+Directory::get_username() const{
     return username;
 }
 
 
 bool
-Directory::empty(){
+Directory::empty() const{
     return path.directory.empty();
-}
-
-
-bool
-Directory::is_file(){
-    return boost::filesystem::is_regular_file(path.directory.native() + path.file.native());
 }
 
 

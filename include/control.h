@@ -5,6 +5,7 @@
 #include "config_directory.h"
 #include "directory_structure.h"
 #include "config.h"
+#include "archive.hpp"
 #include "screen.h"
 
 #include <string>
@@ -44,6 +45,7 @@ public:
         UNKNOWN_COMMAND = 0,
         HELP = 1,
         CONFIG = 2,
+		ARCHIVE = 3,
         
         //config command
         CREAT = 100,
@@ -60,17 +62,17 @@ public:
     static const std::map<std::string, COMMAND_FLAG> config_commands_map;
 
     //Static method
-    static void exec_command(Control&, Config_Directory&); //!< choose other method for flag and pass arguments;
-
+    static void exec_command(Control&, Config&, Config_Directory&); //!< choose other method for flag and pass arguments;
+	static void exec_config_default(Config&, Config_Directory&);
     
 private:
     static void exec_help(string_deq&);
     static void exec_config(string_deq&, Config&, Config_Directory&);
-    static bool exec_config_default(const string_deq&, Config&, Config_Directory&);
     static void exec_config_creat(const string_deq&, Config&);
     static void exec_config_load(const string_deq&, Config_Directory&);
     static void exec_config_add_row(string_deq&, Config&);
     static void exec_config_remove_row(string_deq&, Config&);
+	static void exec_archive(Config&);
 
 
     template<class MAP>

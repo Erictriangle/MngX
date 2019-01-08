@@ -38,14 +38,15 @@ set(Boost_USE_STATIC_RUNETIME OFF)
 find_package(Boost 1.67.0 COMPONENTS system filesystem unit_test_framework REQUIRED)
   
 
+
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    add_executable(${PROJECT_NAME} "main.cpp" ${SOURCES})
+	add_executable(${PROJECT_NAME} "main.cpp" ${SOURCES})
     target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 
 
     #UNIT_TEST
-    add_executable(ut_control ${UNIT_TEST} ${SOURCES})
-    target_link_libraries(ut_control ${Boost_LIBRARIES})
+	#add_executable(ut_control ${UNIT_TEST} ${SOURCES})
+	#target_link_libraries(ut_control ${Boost_LIBRARIES})
 endif()
 

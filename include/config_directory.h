@@ -22,7 +22,7 @@ public:
     ~Config_Directory() = default;
 
     void set_path(const std::string&);
-    std::string take_default_path();
+    std::string get_default_path();
     
 private:
     void set_default_path();

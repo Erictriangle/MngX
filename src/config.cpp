@@ -9,21 +9,24 @@
 const std::map<Config::SECTION, std::string> Config::section_string_map{
     { GLOBAL, ".mngx" },
     { MAJOR, ".major" },
-    { SUB_CONFIG, ".sub-config"}
+    { SUB_CONFIG, ".sub-config" },
+	{ ARCHIVE, ".archive" }
 };
 
 
 const std::map<std::string, Config::SECTION> Config::string_section_map{
     { ".mngx", GLOBAL },
     { ".major", MAJOR },
-    { ".sub-config", SUB_CONFIG }
+    { ".sub-config", SUB_CONFIG },
+	{ ".archive", ARCHIVE }
 };
 
 
 const std::map<std::string, Config::SECTION> Config::input_section_map{
     { "global", GLOBAL },
     { "major", MAJOR },
-    { "sub-config", SUB_CONFIG }
+    { "sub-config", SUB_CONFIG },
+	{ "archive", ARCHIVE }
 }; 
 
 
@@ -113,7 +116,7 @@ Config::add_row(const SECTION section, const std::string& input){
     string_vec temp_vec;
     std::string buffer;
 
-    file.io.open(file.name, std::ios::in, ); //file -> vector
+    file.io.open(file.name, std::ios::in); //file -> vector
     while(file.io >> buffer)
         temp_vec.push_back(buffer);
     file.io.close();
