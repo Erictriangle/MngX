@@ -1,380 +1,351 @@
-#include "control.h"
+#include "control.hpp"
 
 
-//==============
-//==STATIC_MAP==
-//============
+namespace mngx
+{
 
-
-const std::map<std::string, Control::COMMAND_FLAG> Control::flag_command_map{
-    { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
-    { "-h", HELP },
-    { "--help", HELP },
-    { "-c", CONFIG },
-    { "--config", CONFIG },
-	{ "-a", ARCHIVE },
-	{ "--archive", ARCHIVE }
+const std::map<std::string, Control::CTRL_COMMAND> Control::flagMap
+{
+  { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
+  { "-h", HELP },
+  { "--help", HELP },
+  { "-c", CONFIG },
+  { "--config", CONFIG },
 };
 
-
-const std::map<std::string, Control::COMMAND_FLAG> Control::help_map{
-    { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
-    { "config", CONFIG },
-	{ "archive", ARCHIVE }
+const std::map<std::string, Control::CTRL_COMMAND> Control::helpMap
+{
+  { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
+  { "config", CONFIG },
 };
 
-
-const std::map<std::string, Control::COMMAND_FLAG> Control::config_commands_map{
-    { "UNKNOWN COMMAND", UNKNOWN_COMMAND},
-    { "creat", CREAT},
-    { "load", LOAD},
-    { "add-directory", ADD_DIRECTORY},
-    { "remove-directory", REMOVE_DIRECTORY}
+const std::map<std::string, Control::CTRL_COMMAND> Control::configMap
+{
+  { "UNKNOWN COMMAND", UNKNOWN_COMMAND},
+  { "creat", CREAT},
+  { "load", LOAD},
+  { "add-directory", ADD_DIRECTORY},
+  { "remove-directory", REMOVE_DIRECTORY}
 };
-
-
-//===========
-//==STATIC==
-//=========
 
 
 void
-Control::exec_command(Control& control, Config& config,
-	Config_Directory& config_directory){
-  
-    command cmd = control.get_command();
-    auto key = flag_command_map.find(cmd.name);
+Control::execCommand(Control& control, Config& config)
+{
+  s_command cmd = control.command();
+  auto flag = key(flagMap, cmd.flag);
 
-    switch(key->second){
-    case UNKNOWN_COMMAND:
-        break;
-        
-    case HELP:
-        exec_help(cmd.arguments);
-        break;
-        
+  switch(flag)
+  {
+  case UNKNOWN_COMMAND:
+    break;
+
+  case HELP:
+    execHelp(cmd.arguments);
+    break;
+
+  case CONFIG:
+    execConfig(cmd.arguments, config);
+    break;
+
+  default:
+    throw " -=[ EXCEPTION ]=-  cotrol flow exceptions!";
+  }
+}
+
+
+void
+Control::execHelp(const string_deq& cmd)
+{
+    if(cmd.empty())
+    {
+      screen::help();
+      return;
+    }
+
+    auto subCmd = key(helpMap, cmd.front());
+    switch(subCmd){
     case CONFIG:
-        exec_config(cmd.arguments, config, config_directory);
-        break;
-		
-	case ARCHIVE:
-		exec_archive(config);
-		break;
-        
+      screen::helpConfig();
+      break;
+
     default:
-        throw " -=[ EXCEPTION ]=-  exec_command exceptions!";
+      screen::incorrectSubcommand("-h | --help", cmd.front());
+      break;
     }
 }
 
 
 void
-Control::exec_help(string_deq& cmd){
-    if(cmd.empty()){
-        screen::help();
-        return;
-    }
-
-    auto key = take_key(help_map, cmd.front());
-    switch(key){
-    case UNKNOWN_COMMAND:
-        screen::incorrect_subcommand("-h | --help", cmd.front());
-        break;
-        
-    case CONFIG:
-        screen::help_config();
-        break;
-
-	case ARCHIVE:
-		//screen::help_archive();
-		break;
-        
-    default:
-        throw " -=[ EXCEPTION ]=-  exec_help exception!";
-    }
-}
-
-
-void
-Control::exec_config(string_deq& cmd, Config& config, Config_Directory& config_directory){
-    auto key = take_key(config_commands_map, cmd.front());
-    switch(key){
-    case UNKNOWN_COMMAND:
-        screen::incorrect_subcommand("-c | --config", cmd.front());
-        break;
-
+Control::execConfig(const string_deq& cmd, Config& config){
+    auto  subCmd = key(configMap, cmd.front());
+    switch(subCmd){
     case CREAT:
-        exec_config_creat(cmd, config);
-        break;
+      execConfigCreat(cmd, config);
+      break;
 
     case LOAD:
-        exec_config_load(cmd, config_directory);
-        break;
+      execConfigLoad(cmd, config);
+      break;
 
     case ADD_DIRECTORY:
-        exec_config_add_row(cmd, config);
-        break;
-        
+      execConfigAddDirectory(cmd, config);
+      break;
+
     case REMOVE_DIRECTORY:
-        exec_config_remove_row(cmd, config);
-        break;
-       
+      execConfigRemoveDirectory(cmd, config);
+      break;
+
     default:
-        throw " -=[ EXCEPTION ]=-  exec_config exception! \n"; //TODO - exception handling
-    }
-}
-    
-
-
-void
-Control::exec_config_default( Config& config, Config_Directory& config_directory){
-    if(!Directory::is_file(config_directory))
-        config.creat(config_directory.get_default_path());
-}
-
-
-void
-Control::exec_config_creat(const string_deq& cmd, Config& config){
-    if(cmd.size() != 2)
-        screen::wrong_arguments_number("-c | --config");
-    else{
-        Config_Directory cd(cmd[1]);
-        config.creat(cd.get_path());
+      screen::incorrectSubcommand("-c | --config", cmd.front());
+      break;
     }
 }
 
 
 void
-Control::exec_config_load(const string_deq& cmd, Config_Directory& config_directory){
-    if(cmd.size() != 2)
-        screen::wrong_arguments_number("-c | --config");
+Control::execConfigDefault()
+{
+  mngx::PathConfig pathConfig;
+  mngx::Config config;
+  if(!mngx::Path::isDirectory(pathConfig.defaultDirectory()))
+      mngx::Path::creatDirectory(pathConfig.defaultDirectory());
+
+  if(!mngx::Path::isFile(pathConfig.defaultPath()))
+    config.creat();
+
+}
+
+
+void
+Control::execConfigCreat(const string_deq& cmd, Config& config)
+{
+  if(cmd.size() != 2)
+  {
+    mngx::screen::wrongArgumentsNumber("-c | --config");
+    return;
+  }
+  config.creat(cmd[1]);
+}
+
+
+void
+Control::execConfigLoad(const string_deq& cmd, Config& config)
+{
+  if(cmd.size() != 2)
+  {
+    mngx::screen::wrongArgumentsNumber("-c | --config");
+    return;
+  }
+  config = cmd[1];
+}
+
+
+void
+Control::execConfigAddDirectory(const string_deq& cmd, Config& config)
+{
+  auto section = Config::GLOBAL;
+  for(auto it = cmd.cbegin()+1; it != cmd.cend(); it++)
+  {
+    if(Config::stringSectionMap.count(*it))
+      section = Config::stringSectionMap.find(*it)->second;
     else
-        config_directory.set_path(cmd[1]);
+      config.addRow(section, *it);
+  }
 }
 
 
 void
-Control::exec_config_add_row(string_deq& cmd, Config& config){
-    Config::SECTION section = Config::GLOBAL;
-    cmd.pop_front(); //first is add_directory
-
-    while(!cmd.empty()){
-        if(Config::input_section_map.find(cmd.front()) != Config::input_section_map.end())
-            section = Config::input_section_map.find(cmd.front())->second;
-        else
-            config.add_row(section, cmd.front());
-        cmd.pop_front();
-    }
+Control::execConfigRemoveDirectory(const string_deq& cmd, Config& config)
+{
+  auto section = Config::GLOBAL;
+  for(auto it = cmd.cbegin()+1; it != cmd.cend(); it++)
+  {
+    if(Config::stringSectionMap.count(*it))
+      section = Config::stringSectionMap.find(*it)->second;
+    else
+      config.removeRow(section, *it);
+  }
 }
 
 
-void
-Control::exec_config_remove_row(string_deq& cmd, Config& config){
-    Config::SECTION section = Config::GLOBAL;;
-    cmd.pop_front(); //first is add_directory
-
-    while(!cmd.empty()){
-        if(Config::input_section_map.find(cmd.front()) != Config::input_section_map.end())
-            section = Config::input_section_map.find(cmd.front())->second;
-            else
-                config.remove_row(section, cmd.front());
-            cmd.pop_front();
-    }
+template<class MAP> Control::CTRL_COMMAND
+ Control::key(const MAP& map, const std::string& key)
+{
+  return map.find(key)->second;
 }
 
 
-void
-Control::exec_archive(Config& config) {
-	Archive archive(config.get_section(Config::ARCHIVE));
-	if (!archive.creat_archive())
-		std::cout << archive.get_error() << std::endl;
+Control::Control(const int argc, char** argv)
+{
+  command(argc, argv);
 }
 
 
-//==============
-//==TEAMPLATE==
-//============
-
-
-template<class MAP>
-Control::COMMAND_FLAG Control::take_key(const MAP& map, const std::string& input){
-    auto key = map.find(input);
-    if(key == map.end())
-        return Control::UNKNOWN_COMMAND;
-    return key->second;
+Control::Control(const std::string& input)
+{
+  command(input);
 }
 
 
-//=================
-//==CONSTRUCTORS==
-//===============
-
-
-Control::Control(const int argc, char** argv){
-    set_argv(argc, argv);
-}
-
-    
-Control::Control(const std::string& input){
-    set_input(input);
-}
-
-
-Control::Control(const Control& control){
-    commands = control.commands;
-    incorrect_flags = control.incorrect_flags;
-}
-
-
-//==============
-//==OPERATORS==
-//============
-
-
-Control&
-Control::operator=(const Control& control){
-    this->clear();
-    commands = control.commands;
-    incorrect_flags = control.incorrect_flags;
-    return *this;
+Control::Control(const Control& control)
+{
+   command(control);
 }
 
 
 Control&
-Control::operator=(const std::string& input){
-    this->clear();
-    set_input(input);
-    return *this;
+Control::operator=(const Control& control)
+{
+  command(control);
+  return *this;
 }
 
 
 Control&
-Control::operator+=(const Control& control){
-    for(auto c : control.commands)
-        commands.push_back(c);
-    for(auto ic : control.incorrect_flags)
-        incorrect_flags.push_back(ic);
-    
-    return *this;
+Control::operator=(const std::string& cmd)
+{
+  command(cmd);
+  return *this;
 }
 
 
 Control&
-Control::operator+=(const std::string& input){
-    set_input(input);
-    return *this;
+Control::operator+=(const Control& control)
+{
+  for(auto c : control.m_commands)
+  {
+    m_commands.push_back(c);
+  }
+  for(auto i : control.m_incorrects)
+  {
+    m_incorrects.push_back(i);
+  }
+  return *this;
 }
 
 
-//===========
-//==PUBLIC==
-//=========
+Control&
+Control::operator+=(const std::string& cmd)
+{
+  Control control(cmd);
+  for(auto c : control.m_commands)
+  {
+    m_commands.push_back(c);
+  }
+  for(auto i : control.m_incorrects)
+  {
+    m_incorrects.push_back(i);
+  }
+  return *this;
+}
 
+
+Control::s_command
+Control::command()
+{
+  s_command temp = m_commands.front();
+  m_commands.pop_front();
+  return temp;
+}
 
 bool
-Control::set_argv(const int argc, char** argv){
-    std::string input;
+Control::command(const int argc, char** argv)
+{
+  std::string input;
 
-    for(int i = 1; i < argc; i++){
-        input += argv[i];
-        input += " ";
-    }
-    input = input.substr(0, input.size()-1); //kill last space char
+  for(int i = 1; i < argc; i++)
+  {
+    input += argv[i];
+    input += " ";
+  }
+  input.pop_back();
 
-    return set_input(input);
+  return command(input);
 }
 
 
 bool
-Control::set_input(const std::string& input){
-    string_deq temp;
-    boost::split(temp, input, boost::is_any_of(" "));
+Control::command(const std::string& input)
+{
+  string_deq temp;
+  boost::split(temp, input, boost::is_any_of(" "));
 
-    this->clear();
+  this->clear();
+  divideInput(temp);
+  return !m_incorrects.empty();
+}
 
-    if(!check_flags(temp))
-        return 0;
-
-    return divide_input(temp);
+bool
+Control::command(const Control& control)
+{
+  m_commands = control.m_commands;
+  m_incorrects = control.m_incorrects;
+  return m_incorrects.empty();
 }
 
 
 std::string
-Control::get_incorrect_flag(){
-    std::string temp = incorrect_flags.front();
-    incorrect_flags.pop_front();
-
-    return temp;
+Control::incorrect()
+{
+  std::string temp;
+  return (m_incorrects.empty())
+    ? ""
+    : temp;
 }
 
 
 bool
-Control::status() const{
-    return incorrect_flags.empty();
-
+Control::status() const
+{
+  return m_incorrects.empty();
 }
 
 
 bool
-Control::empty() const{
-    return commands.empty();
+Control::empty() const
+{
+  return m_commands.empty();
 }
 
 
 void
-Control::clear(){
-    commands.clear();
-    incorrect_flags.clear();
+Control::clear()
+{
+  m_commands.clear();
+  m_incorrects.clear();
 }
 
 
-Control::command
-Control::get_command(){
-    Control::command temp = commands.front();
-    commands.pop_front();
+void
+Control::divideInput(const string_deq& input)
+{
+    s_command cmd{};
 
-    return temp;
-}
+    for(auto it = input.cbegin(); it != input.cend(); it++)
+    {
+      if(flagMap.count(*it))
+      {
+        cmd.flag = *it;
+        it++;
 
-
-//============
-//==PRIVATE==
-//==========
-
-
-bool
-Control::check_flags(const string_deq& input){
-    for(auto i : input)
-        if(i.front() == '-' && !Control::flag_command_map.count(i))
-            incorrect_flags.push_back(i);
-
-    return incorrect_flags.empty();
-}
-
-
-bool
-Control::divide_input(const string_deq& input){
-    command cmd{};
-
-    for(auto it = input.begin(); it != input.end(); it++){
-        if(flag_command_map.count(*it)){
-            cmd.name = *it;
-            it++;
-            
-            while(it != input.end() && !flag_command_map.count(*it)){
-                cmd.arguments.push_back(*it);
-                it++;
-            }
-                    
-            commands.push_back(cmd);
-            cmd.name.clear();
-            cmd.arguments.clear();
-            it--;
+        while(it != input.cend() && !flagMap.count(*it))
+        {
+          cmd.arguments.push_back(*it);
+          it++;
         }
-        else{
-            incorrect_flags.push_back(*it);
-            return 0;
-        }
+
+        m_commands.push_back(cmd);
+        cmd.flag.clear();
+        cmd.arguments.clear();
+        it--;
+      }
+      else
+      {
+        m_incorrects.push_back(*it);
+        return;
+      }
     }
-    
-    return 1;
 }
+
+} //namespace mngx

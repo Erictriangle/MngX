@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 file(GLOB SOURCES "src/*.cpp")
-file(GLOB UNIT_TEST "ut/*.cpp")
+file(GLOB UNIT_TEST "Testing/*.cpp")
 include_directories(include)
 
 
@@ -21,22 +21,22 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Werror -O3")
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "bin/")
-  
+
 elseif(CMAKE_BUILD_TYPE MATCHES Release)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "Release/")
-  
+
 elseif(CMAKE_BUILD_TYPE MATCHES Debug)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "Debug/")
 endif()
 
 
-  
+
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREAD ON)
 set(Boost_USE_STATIC_RUNETIME OFF)
 
 find_package(Boost 1.67.0 COMPONENTS system filesystem unit_test_framework REQUIRED)
-  
+
 
 
 if(Boost_FOUND)
@@ -45,8 +45,13 @@ if(Boost_FOUND)
     target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 
 
-    #UNIT_TEST
-	#add_executable(ut_control ${UNIT_TEST} ${SOURCES})
-	#target_link_libraries(ut_control ${Boost_LIBRARIES})
-endif()
+  #UNIT_TEST
+	add_executable(ut_path Testing/ut_path.cpp ${SOURCES})
+	target_link_libraries(ut_path ${Boost_LIBRARIES})
 
+  add_executable(ut_config Testing/ut_config.cpp ${SOURCES})
+  target_link_libraries(ut_config ${Boost_LIBRARIES})
+
+  add_executable(ut_control Testing/ut_control.cpp ${SOURCES})
+  target_link_libraries(ut_control ${Boost_LIBRARIES})
+endif()
