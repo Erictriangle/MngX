@@ -8,18 +8,16 @@
 #include <map>
 #include <iterator>
 #include <memory>
+#include <algorithm>
 
 
-namespace mngx
-{
-class Config
-{
+namespace mngx{
+class Config{
 private:
   typedef std::vector<std::string> string_vec;
 
 public:
-  enum SECTION
-  {
+  enum SECTION{
     GLOBAL = 0
   };
 

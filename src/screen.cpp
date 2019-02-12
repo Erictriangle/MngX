@@ -1,19 +1,16 @@
 #include "screen.hpp"
 
 
-namespace mngx
-{
+namespace mngx{
 
 const std::string
-screen::font(FONT number = RESET)
-{
+screen::font(FONT number = RESET){
   return "\u001b[" + std::to_string(number) + "m";
 }
 
 
 const std::string
-screen::counter(const int now, const int end)
-{
+screen::counter(const int now, const int end){
   std::string hash('#', now);
   std::string dash('-', (end-now));
   return "[" + hash + dash + "]";
@@ -21,8 +18,7 @@ screen::counter(const int now, const int end)
 
 
 void
-screen::status()
-{
+screen::status(){
   std::cout << "  [ MngX ] \n";
   std::cout << "\n";
   std::cout << "Pre-alpha; \n";
@@ -30,8 +26,7 @@ screen::status()
 
 
 void
-screen::help()
-{
+screen::help(){
   std::cout << "usage: mngx [-h | --help <flag>] [-c | --config <command>]\n";
   std::cout << "            [work in progres]\n"; //In progress
   std::cout << "\n";
@@ -65,7 +60,7 @@ screen::helpConfig(){
 void
 screen::incorrectFlag(const std::string& flag){
     std::cout << font(screen::RED) << flag <<
-      font() << " is incorrect flag.\n";
+      font() << " is incorrect flag.\n\n";
     std::cout << "Use -h | --help if you need help.\n";
     std::cout << "\n";
 }
@@ -73,7 +68,8 @@ screen::incorrectFlag(const std::string& flag){
 
 void
 screen::wrongArgumentsNumber(const std::string& cmd){
-    std::cout << "Wrong number of arguments for  " << cmd << " flag;\n";
+    std::cout << "Wrong number of arguments for  " <<
+      font(RED) << font(BOLD) << cmd << font() << " flag;\n\n";
     std::cout << "Use -h | --help <flag> if you need help.\n";
     std::cout << "\n";
 }
@@ -81,7 +77,9 @@ screen::wrongArgumentsNumber(const std::string& cmd){
 
 void
 screen::incorrectSubcommand(const std::string& flag, const std::string& cmd){
-    std::cout << cmd << " is wrong command for " << flag << " flag.\n";
+    std::cout << font(RED) << font(BOLD) << cmd << font()
+      << " is wrong command for " << font(GREEN) << font(BOLD) << flag
+      << font() << " flag.\n\n";
     std::cout << "Use -h | --help " << flag << " if you need help.\n";
     std::cout << "\n";
 }

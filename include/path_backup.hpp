@@ -4,10 +4,8 @@
 #include "path.hpp"
 
 
-namespace mngx
-{
-class PathBackup : public Path
-{
+namespace mngx{
+class PathBackup : public Path{
 public:
   PathBackup() = default;
   PathBackup(const std::string&);

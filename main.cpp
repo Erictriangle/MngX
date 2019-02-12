@@ -21,6 +21,10 @@ int main(int argc, char** argv)
 			mngx::Control::execCommand(control, config);
 		}
 
+		if(!control.status())
+			mngx::screen::incorrectFlag(control.incorrect());
+
+
 	}
 	catch(const std::system_error& e)
 	{

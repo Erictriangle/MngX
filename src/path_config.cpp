@@ -1,67 +1,57 @@
 #include "path_config.hpp"
 
 
-namespace mngx
-{
+namespace mngx{
 
-PathConfig::PathConfig()
-{
+PathConfig::PathConfig(){
   setDefault();
 }
 
 
-PathConfig::PathConfig(const std::string& n_path)
-{
+PathConfig::PathConfig(const std::string& n_path){
   setDefault();
   path(n_path);
 }
 
 
-PathConfig::PathConfig(const PathConfig& n_path)
-{
+PathConfig::PathConfig(const PathConfig& n_path){
   setDefault();
   path(n_path);
 }
 
 
 PathConfig&
-PathConfig::operator=(const std::string& n_path)
-{
+PathConfig::operator=(const std::string& n_path){
   path(n_path);
   return *this;
 }
 
 
 PathConfig&
-PathConfig::operator=(const PathConfig& n_path)
-{
+PathConfig::operator=(const PathConfig& n_path){
   m_path = n_path.m_path;
   return *this;
 }
 
 
 bool
-PathConfig::operator==(const PathConfig& n_path) const
-{
+PathConfig::operator==(const PathConfig& n_path) const{
   return (this->path().compare(n_path.path())) &&
     (this->defaultPath().compare(n_path.defaultPath()));
 }
 
 
 void
-PathConfig::path(const std::string& n_path)
-{
+PathConfig::path(const std::string& n_path){
   namespace fs = boost::filesystem;
 
-  auto assignFilename = [&](fs::path& inputPath)->fs::path
-  {
+  auto assignFilename = [&](fs::path& inputPath)->fs::path{
     return (!fs::is_directory(inputPath))
       ? inputPath.filename()
       : FILENAME + EXTENSION;
   };
 
-  auto assignDirectory = [](fs::path& inputPath)->fs::path
-  {
+  auto assignDirectory = [](fs::path& inputPath)->fs::path{
     return (fs::is_directory(inputPath))
       ? inputPath
       : inputPath.remove_filename();
@@ -70,13 +60,11 @@ PathConfig::path(const std::string& n_path)
   clear();
   fs::path inputPath(n_path);
 
-  if(inputPath.is_absolute())
-  {
+  if(inputPath.is_absolute()){
     m_path.filename = assignFilename(inputPath);
     m_path.directory = assignDirectory(inputPath);
   }
-  else
-  {
+  else{
     fs::path currentPath = fs::current_path();
     currentPath += "/";
     currentPath += inputPath;
@@ -87,16 +75,14 @@ PathConfig::path(const std::string& n_path)
 
 
 void
-PathConfig::path(const Path& n_path)
-{
+PathConfig::path(const Path& n_path){
   m_path.directory = n_path.directory();
   m_path.filename = n_path.filename();
 }
 
 
 const std::string
-PathConfig::path() const
-{
+PathConfig::path() const{
   if(m_path.directory.empty())
     return "";
 
@@ -107,36 +93,31 @@ PathConfig::path() const
 
 
 const std::string
-PathConfig::defaultPath() const
-{
+PathConfig::defaultPath() const{
   return m_defaultPath.directory.native() + "/" + m_defaultPath.filename.native();
 }
 
 
 const std::string
-PathConfig::defaultDirectory() const
-{
+PathConfig::defaultDirectory() const{
   return m_defaultPath.directory.native();
 }
 
 
 const std::string
-PathConfig::defaultFilename() const
-{
+PathConfig::defaultFilename() const{
   return m_defaultPath.filename.native();
 }
 
 
 bool
-PathConfig::empty() const
-{
+PathConfig::empty() const{
   return m_path.directory.empty();
 }
 
 
 void
-PathConfig::setDefault()
-{
+PathConfig::setDefault(){
   std::string username = getenv("USER");
   m_defaultPath.directory = "/home/" + username + "/" + FOLDER;
   m_defaultPath.filename = FILENAME + EXTENSION;

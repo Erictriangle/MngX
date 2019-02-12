@@ -60,7 +60,7 @@ def append_line_with_TODO(filename, line):
 def check_log_level(key):
     return key in correct_log_level
 
-def run_ut(command, log_level = '--log_level=all'):
+def run_ut(command, log_level):
     sp.call([command, log_level])
 
 def set_log_level():
@@ -88,6 +88,8 @@ def set_log_level():
                         nothing
         ''')
         sys.exit()
+    else:
+        return "--log_level=error"
 
 #Main
 
@@ -106,6 +108,8 @@ if __name__ == '__main__':
         if ut.is_file() and os.access(ut, os.X_OK):
             run_ut(ut, log_level)
 
-    print('TODO list:')
+    print('\nTODO list:')
+    if not output:
+        print('  -nothing to report')
     for o in output:
         print(o)

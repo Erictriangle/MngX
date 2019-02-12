@@ -6,13 +6,10 @@
 #include <boost/filesystem.hpp>
 
 
-namespace mngx
-{
-class Path
-{
+namespace mngx{
+class Path{
 protected:
-  struct
-  {
+  struct{
     boost::filesystem::path directory;
     boost::filesystem::path filename;
   } m_path;

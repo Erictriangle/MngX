@@ -4,13 +4,10 @@
 #include "path.hpp"
 
 
-namespace mngx
-{
-class PathConfig : public Path
-{
+namespace mngx{
+class PathConfig : public Path{
 private:
-  struct
-  {
+  struct{
     boost::filesystem::path directory;
     boost::filesystem::path filename;
   } m_defaultPath;

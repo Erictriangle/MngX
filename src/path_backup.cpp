@@ -1,35 +1,29 @@
 #include "path_backup.hpp"
 
 
-namespace mngx
-{
+namespace mngx{
 
-PathBackup::PathBackup(const std::string& n_path)
-{
+PathBackup::PathBackup(const std::string& n_path){
   path(n_path);
 }
 
 
-PathBackup::PathBackup(const PathBackup& n_path)
-{
+PathBackup::PathBackup(const PathBackup& n_path){
   path(n_path);
 }
 
 
 void
-PathBackup::path(const std::string& n_path)
-{
+PathBackup::path(const std::string& n_path){
   namespace fs = boost::filesystem;
 
-  auto assignFilename = [&](fs::path& inputPath)->fs::path
-  {
+  auto assignFilename = [&](fs::path& inputPath)->fs::path{
     return (!fs::is_directory(inputPath))
       ? inputPath.filename()
       : "";
   };
 
-  auto assignDirectory = [&](fs::path& inputPath)->fs::path
-  {
+  auto assignDirectory = [&](fs::path& inputPath)->fs::path{
     return (fs::is_directory(inputPath))
       ? inputPath
       : inputPath.remove_filename();
@@ -38,13 +32,11 @@ PathBackup::path(const std::string& n_path)
   clear();
   fs::path inputPath(n_path);
 
-  if(inputPath.is_absolute())
-  {
+  if(inputPath.is_absolute()){
     m_path.filename = assignFilename(inputPath);
     m_path.directory = assignDirectory(inputPath);
   }
-  else
-  {
+  else{
     fs::path currentPath = fs::current_path();
     currentPath += "/";
     currentPath += inputPath;
@@ -55,16 +47,14 @@ PathBackup::path(const std::string& n_path)
 
 
 void
-PathBackup::path(const Path& n_path)
-{
+PathBackup::path(const Path& n_path){
   m_path.directory = n_path.directory();
   m_path.filename = n_path.filename();
 }
 
 
 const std::string
-PathBackup::path() const
-{
+PathBackup::path() const{
   if(m_path.directory.empty())
     return "";
 

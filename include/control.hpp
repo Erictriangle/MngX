@@ -10,17 +10,15 @@
 #include <deque>
 #include <map>
 #include <iterator>
+#include <algorithm>
 
 #include <boost/algorithm/string.hpp>
 
 
-namespace mngx
-{
-class Control
-{
+namespace mngx{
+class Control{
 private:
-  struct s_command
-  {
+  struct s_command{
     std::string flag;
     std::deque<std::string> arguments;
   };
@@ -29,8 +27,7 @@ private:
   typedef std::deque<s_command> command_deq;
 
 public:
-  enum CTRL_COMMAND
-  {
+  enum CTRL_COMMAND{
     //flag
     UNKNOWN_COMMAND = 0,
     HELP = 1,
@@ -88,7 +85,7 @@ public:
 
 private:
   command_deq m_commands;
-  string_deq m_incorrects;
+  std::string m_incorrect;
 
   void divideInput(const string_deq&);
 

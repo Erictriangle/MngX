@@ -1,11 +1,9 @@
 #include "control.hpp"
 
 
-namespace mngx
-{
+namespace mngx{
 
-const std::map<std::string, Control::CTRL_COMMAND> Control::flagMap
-{
+const std::map<std::string, Control::CTRL_COMMAND> Control::flagMap{
   { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
   { "-h", HELP },
   { "--help", HELP },
@@ -13,14 +11,12 @@ const std::map<std::string, Control::CTRL_COMMAND> Control::flagMap
   { "--config", CONFIG },
 };
 
-const std::map<std::string, Control::CTRL_COMMAND> Control::helpMap
-{
+const std::map<std::string, Control::CTRL_COMMAND> Control::helpMap{
   { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
   { "config", CONFIG },
 };
 
-const std::map<std::string, Control::CTRL_COMMAND> Control::configMap
-{
+const std::map<std::string, Control::CTRL_COMMAND> Control::configMap{
   { "UNKNOWN COMMAND", UNKNOWN_COMMAND},
   { "creat", CREAT},
   { "load", LOAD},
@@ -30,13 +26,11 @@ const std::map<std::string, Control::CTRL_COMMAND> Control::configMap
 
 
 void
-Control::execCommand(Control& control, Config& config)
-{
+Control::execCommand(Control& control, Config& config){
   s_command cmd = control.command();
   auto flag = key(flagMap, cmd.flag);
 
-  switch(flag)
-  {
+  switch(flag){
   case UNKNOWN_COMMAND:
     break;
 
@@ -55,10 +49,8 @@ Control::execCommand(Control& control, Config& config)
 
 
 void
-Control::execHelp(const string_deq& cmd)
-{
-    if(cmd.empty())
-    {
+Control::execHelp(const string_deq& cmd){
+    if(cmd.empty()){
       screen::help();
       return;
     }
@@ -104,8 +96,7 @@ Control::execConfig(const string_deq& cmd, Config& config){
 
 
 void
-Control::execConfigDefault()
-{
+Control::execConfigDefault(){
   mngx::PathConfig pathConfig;
   mngx::Config config;
   if(!mngx::Path::isDirectory(pathConfig.defaultDirectory()))
@@ -118,10 +109,8 @@ Control::execConfigDefault()
 
 
 void
-Control::execConfigCreat(const string_deq& cmd, Config& config)
-{
-  if(cmd.size() != 2)
-  {
+Control::execConfigCreat(const string_deq& cmd, Config& config){
+  if(cmd.size() != 2){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return;
   }
@@ -130,10 +119,8 @@ Control::execConfigCreat(const string_deq& cmd, Config& config)
 
 
 void
-Control::execConfigLoad(const string_deq& cmd, Config& config)
-{
-  if(cmd.size() != 2)
-  {
+Control::execConfigLoad(const string_deq& cmd, Config& config){
+  if(cmd.size() != 2){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return;
   }
@@ -142,120 +129,103 @@ Control::execConfigLoad(const string_deq& cmd, Config& config)
 
 
 void
-Control::execConfigAddDirectory(const string_deq& cmd, Config& config)
-{
+Control::execConfigAddDirectory(const string_deq& cmd, Config& config){
   auto section = Config::GLOBAL;
-  for(auto it = cmd.cbegin()+1; it != cmd.cend(); it++)
-  {
-    if(Config::stringSectionMap.count(*it))
-      section = Config::stringSectionMap.find(*it)->second;
+
+  for(auto str : cmd){
+    if(Config::stringSectionMap.count(str))
+      section = Config::stringSectionMap.find(str)->second;
     else
-      config.addRow(section, *it);
+      config.addRow(section, str);
   }
 }
 
 
 void
-Control::execConfigRemoveDirectory(const string_deq& cmd, Config& config)
-{
+Control::execConfigRemoveDirectory(const string_deq& cmd, Config& config){
   auto section = Config::GLOBAL;
-  for(auto it = cmd.cbegin()+1; it != cmd.cend(); it++)
-  {
-    if(Config::stringSectionMap.count(*it))
-      section = Config::stringSectionMap.find(*it)->second;
+
+  for(auto str : cmd){
+    if(Config::stringSectionMap.count(str))
+      section = Config::stringSectionMap.find(str)->second;
     else
-      config.removeRow(section, *it);
+      config.removeRow(section, str);
   }
 }
 
 
 template<class MAP> Control::CTRL_COMMAND
- Control::key(const MAP& map, const std::string& key)
-{
+ Control::key(const MAP& map, const std::string& key){
   return map.find(key)->second;
 }
 
 
-Control::Control(const int argc, char** argv)
-{
+Control::Control(const int argc, char** argv){
   command(argc, argv);
 }
 
 
-Control::Control(const std::string& input)
-{
+Control::Control(const std::string& input){
   command(input);
 }
 
 
-Control::Control(const Control& control)
-{
+Control::Control(const Control& control){
    command(control);
 }
 
 
 Control&
-Control::operator=(const Control& control)
-{
+Control::operator=(const Control& control){
   command(control);
   return *this;
 }
 
 
 Control&
-Control::operator=(const std::string& cmd)
-{
+Control::operator=(const std::string& cmd){
   command(cmd);
   return *this;
 }
 
 
 Control&
-Control::operator+=(const Control& control)
-{
+Control::operator+=(const Control& control){
   for(auto c : control.m_commands)
-  {
     m_commands.push_back(c);
-  }
-  for(auto i : control.m_incorrects)
-  {
-    m_incorrects.push_back(i);
-  }
+
+  for(auto i : control.m_incorrect)
+    m_incorrect.push_back(i);
+
   return *this;
 }
 
 
 Control&
-Control::operator+=(const std::string& cmd)
-{
+Control::operator+=(const std::string& cmd){
   Control control(cmd);
   for(auto c : control.m_commands)
-  {
     m_commands.push_back(c);
-  }
-  for(auto i : control.m_incorrects)
-  {
-    m_incorrects.push_back(i);
-  }
+
+  for(auto i : control.m_incorrect)
+    m_incorrect.push_back(i);
+
   return *this;
 }
 
 
 Control::s_command
-Control::command()
-{
+Control::command(){
   s_command temp = m_commands.front();
   m_commands.pop_front();
   return temp;
 }
 
 bool
-Control::command(const int argc, char** argv)
-{
+Control::command(const int argc, char** argv){
   std::string input;
 
-  for(int i = 1; i < argc; i++)
-  {
+  for(int i = 1; i < argc; i++){
     input += argv[i];
     input += " ";
   }
@@ -266,71 +236,58 @@ Control::command(const int argc, char** argv)
 
 
 bool
-Control::command(const std::string& input)
-{
+Control::command(const std::string& input){
   string_deq temp;
   boost::split(temp, input, boost::is_any_of(" "));
 
   this->clear();
   divideInput(temp);
-  return !m_incorrects.empty();
+  return !m_incorrect.empty();
 }
 
 bool
-Control::command(const Control& control)
-{
+Control::command(const Control& control){
   m_commands = control.m_commands;
-  m_incorrects = control.m_incorrects;
-  return m_incorrects.empty();
+  m_incorrect = control.m_incorrect;
+  return m_incorrect.empty();
 }
 
 
 std::string
-Control::incorrect()
-{
-  std::string temp;
-  return (m_incorrects.empty())
-    ? ""
-    : temp;
+Control::incorrect(){
+  return m_incorrect;
 }
 
 
 bool
-Control::status() const
-{
-  return m_incorrects.empty();
+Control::status() const{
+  return m_incorrect.empty();
 }
 
 
 bool
-Control::empty() const
-{
+Control::empty() const{
   return m_commands.empty();
 }
 
 
 void
-Control::clear()
-{
+Control::clear(){
   m_commands.clear();
-  m_incorrects.clear();
+  m_incorrect.clear();
 }
 
 
 void
-Control::divideInput(const string_deq& input)
-{
+Control::divideInput(const string_deq& input){
     s_command cmd{};
 
-    for(auto it = input.cbegin(); it != input.cend(); it++)
-    {
-      if(flagMap.count(*it))
-      {
+    for(auto it = input.cbegin(); it != input.cend(); it++){
+      if(flagMap.count(*it)){
         cmd.flag = *it;
         it++;
 
-        while(it != input.cend() && !flagMap.count(*it))
-        {
+        while(it != input.cend() && !flagMap.count(*it)){
           cmd.arguments.push_back(*it);
           it++;
         }
@@ -340,12 +297,11 @@ Control::divideInput(const string_deq& input)
         cmd.arguments.clear();
         it--;
       }
-      else
-      {
-        m_incorrects.push_back(*it);
+      else{
+        m_incorrect = *it;
         return;
       }
-    }
+  }
 }
 
 } //namespace mngx
