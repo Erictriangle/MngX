@@ -1,5 +1,6 @@
 #include "control.hpp"
 
+//TODO - exceptions handling for all class
 
 int main(int argc, char** argv)
 {
@@ -12,18 +13,13 @@ int main(int argc, char** argv)
 		}
 
 		mngx::Control control(argc, argv);
-		mngx::Config config;
-
 		mngx::Control::execConfigDefault();
 
-		while(!control.empty() && control.status())
-		{
-			mngx::Control::execCommand(control, config);
-		}
+		while(!control.empty() && control.status() &&
+			mngx::Control::execCommand(control));
 
 		if(!control.status())
 			mngx::screen::incorrectFlag(control.incorrect());
-
 
 	}
 	catch(const std::system_error& e)

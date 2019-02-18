@@ -3,12 +3,15 @@
 
 namespace mngx{
 
+
 const std::map<std::string, Control::CTRL_COMMAND> Control::flagMap{
   { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
   { "-h", HELP },
   { "--help", HELP },
   { "-c", CONFIG },
   { "--config", CONFIG },
+  { "-a", ARCHIVE },
+  { "--archive", ARCHIVE }
 };
 
 const std::map<std::string, Control::CTRL_COMMAND> Control::helpMap{
@@ -17,30 +20,35 @@ const std::map<std::string, Control::CTRL_COMMAND> Control::helpMap{
 };
 
 const std::map<std::string, Control::CTRL_COMMAND> Control::configMap{
-  { "UNKNOWN COMMAND", UNKNOWN_COMMAND},
-  { "creat", CREAT},
-  { "load", LOAD},
-  { "add-directory", ADD_DIRECTORY},
-  { "remove-directory", REMOVE_DIRECTORY}
+  { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
+  { "creat", CREAT },
+  { "load", LOAD },
+  { "add-row", ADD_ROW },
+  { "remove-row", REMOVE_ROW },
+  { "creat-pack", CREAT_PACK },
+  { "remove-pack", REMOVE_PACK},
+  { "add-directory", ADD_DIRECTORY },
+  { "remove-directory", REMOVE_DIRECTORY }
 };
 
 
-void
-Control::execCommand(Control& control, Config& config){
+bool
+Control::execCommand(Control& control){
   s_command cmd = control.command();
   auto flag = key(flagMap, cmd.flag);
 
   switch(flag){
   case UNKNOWN_COMMAND:
-    break;
+    return 0;
 
   case HELP:
-    execHelp(cmd.arguments);
-    break;
+    return execHelp(cmd.arguments);
 
   case CONFIG:
-    execConfig(cmd.arguments, config);
-    break;
+    return execConfig(cmd.arguments);
+
+  case ARCHIVE:
+    //TODO - return execArchive(cmd.arguments, config);
 
   default:
     throw " -=[ EXCEPTION ]=-  cotrol flow exceptions!";
@@ -48,11 +56,11 @@ Control::execCommand(Control& control, Config& config){
 }
 
 
-void
+bool
 Control::execHelp(const string_deq& cmd){
     if(cmd.empty()){
       screen::help();
-      return;
+      return 0;
     }
 
     auto subCmd = key(helpMap, cmd.front());
@@ -65,32 +73,41 @@ Control::execHelp(const string_deq& cmd){
       screen::incorrectSubcommand("-h | --help", cmd.front());
       break;
     }
+    return 0;
 }
 
 
-void
-Control::execConfig(const string_deq& cmd, Config& config){
+bool
+Control::execConfig(const string_deq& cmd){
     auto  subCmd = key(configMap, cmd.front());
     switch(subCmd){
     case CREAT:
-      execConfigCreat(cmd, config);
-      break;
+      return execConfigCreat(cmd);
 
     case LOAD:
-      execConfigLoad(cmd, config);
-      break;
+      return execConfigLoad(cmd);
+
+    case ADD_ROW:
+      return execConfigAddRow(cmd);
+
+    case REMOVE_ROW:
+      return execConfigRemoveRow(cmd);
+
+    case CREAT_PACK:
+      return execConfigCreatPack(cmd);
+
+    case REMOVE_PACK:
+      return execConfigRemovePack(cmd);
 
     case ADD_DIRECTORY:
-      execConfigAddDirectory(cmd, config);
-      break;
+      return execConfigAddDirectory(cmd);
 
     case REMOVE_DIRECTORY:
-      execConfigRemoveDirectory(cmd, config);
-      break;
+      return execConfigRemoveDirectory(cmd);
 
     default:
       screen::incorrectSubcommand("-c | --config", cmd.front());
-      break;
+      return 0;
     }
 }
 
@@ -98,60 +115,110 @@ Control::execConfig(const string_deq& cmd, Config& config){
 void
 Control::execConfigDefault(){
   mngx::PathConfig pathConfig;
-  mngx::Config config;
+  mngx::Config* config = Config::instance();
   if(!mngx::Path::isDirectory(pathConfig.defaultDirectory()))
       mngx::Path::creatDirectory(pathConfig.defaultDirectory());
 
   if(!mngx::Path::isFile(pathConfig.defaultPath()))
-    config.creat();
-
+    config->creat();
 }
 
 
-void
-Control::execConfigCreat(const string_deq& cmd, Config& config){
+bool
+Control::execConfigCreat(const string_deq& cmd){
   if(cmd.size() != 2){
     mngx::screen::wrongArgumentsNumber("-c | --config");
-    return;
+    return 0;
   }
-  config.creat(cmd[1]);
+  Config* config = Config::instance();
+  return config->creat(cmd[1]);
 }
 
 
-void
-Control::execConfigLoad(const string_deq& cmd, Config& config){
+bool
+Control::execConfigLoad(const string_deq& cmd){
   if(cmd.size() != 2){
     mngx::screen::wrongArgumentsNumber("-c | --config");
-    return;
+    return 0;
   }
-  config = cmd[1];
+  Config* config = Config::instance();
+  return config->load(cmd[1]);
 }
 
 
-void
-Control::execConfigAddDirectory(const string_deq& cmd, Config& config){
-  auto section = Config::GLOBAL;
-
-  for(auto str : cmd){
-    if(Config::stringSectionMap.count(str))
-      section = Config::stringSectionMap.find(str)->second;
-    else
-      config.addRow(section, str);
+bool
+Control::execConfigAddRow(const string_deq& cmd){
+  if(cmd.size() != 3){
+    mngx::screen::wrongArgumentsNumber("-c | --config");
+    return 0;
   }
+  Config* config = Config::instance();
+  return config->addRow(Config::GLOBAL, cmd[1] + "=" + cmd[2]);
 }
 
 
-void
-Control::execConfigRemoveDirectory(const string_deq& cmd, Config& config){
-  auto section = Config::GLOBAL;
-
-  for(auto str : cmd){
-    if(Config::stringSectionMap.count(str))
-      section = Config::stringSectionMap.find(str)->second;
-    else
-      config.removeRow(section, str);
+bool
+Control::execConfigRemoveRow(const string_deq& cmd){
+  if(cmd.size() != 3){
+    mngx::screen::wrongArgumentsNumber("-c | --config");
+    return 0;
   }
+  Config* config = Config::instance();
+  return config->removeRow(Config::GLOBAL, cmd[1] + "=" + cmd[2]);
 }
+
+
+bool
+Control::execConfigCreatPack(const string_deq& cmd){
+  if(cmd.size() != 2){
+    mngx::screen::wrongArgumentsNumber("-c | --config");
+    return 0;
+  }
+  Config* config = Config::instance();
+  return config->creatPack(cmd[1]);
+}
+
+
+bool
+Control::execConfigRemovePack(const string_deq& cmd){
+  if(cmd.size() != 2){
+    mngx::screen::wrongArgumentsNumber("-c | --config");
+    return 0;
+  }
+  Config* config = Config::instance();
+  return config->removePack(cmd[1]);
+}
+
+
+bool
+Control::execConfigAddDirectory(const string_deq& cmd){
+  if(cmd.size() < 3){
+    mngx::screen::wrongArgumentsNumber("-c | --config");
+    return 0;
+  }
+  Config* config = Config::instance();
+  for(auto it = cmd.cbegin()+2; it != cmd.cend(); it++){
+    if(!config->addToPack(cmd[1], *it))
+      return 0;
+  }
+  return 1;
+}
+
+
+bool
+Control::execConfigRemoveDirectory(const string_deq& cmd){
+  if(cmd.size() < 3){
+    mngx::screen::wrongArgumentsNumber("-c | --config");
+    return 0;
+  }
+  Config* config = Config::instance();
+  for(auto it = cmd.cbegin()+2; it != cmd.cend(); it++){
+    if(!config->removeFromPack(cmd[1], *it))
+      return 0;
+  }
+  return 1;
+}
+
 
 
 template<class MAP> Control::CTRL_COMMAND
@@ -303,5 +370,6 @@ Control::divideInput(const string_deq& input){
       }
   }
 }
+
 
 } //namespace mngx

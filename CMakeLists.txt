@@ -13,7 +13,7 @@ file(GLOB UNIT_TEST "Testing/*.cpp")
 
 
 set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -Werror -O3")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -Werror -O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -Werror -O0")
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)

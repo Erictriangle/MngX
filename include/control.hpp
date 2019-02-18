@@ -32,13 +32,24 @@ public:
     UNKNOWN_COMMAND = 0,
     HELP = 1,
     CONFIG = 2,
+    ARCHIVE = 3,
 
-
-    //config command
+    //subcommand
     CREAT = 100,
-    LOAD = 101,
-    ADD_DIRECTORY = 102,
-    REMOVE_DIRECTORY = 103
+    ADD = 101,
+    REMOVE = 102,
+    LOAD = 103,
+
+    //config subcommand
+    ADD_ROW = 200,
+    REMOVE_ROW = 201,
+    CREAT_PACK = 202,
+    REMOVE_PACK = 203,
+    ADD_DIRECTORY = 204,
+    REMOVE_DIRECTORY = 205
+
+    //archive subcommand
+
   };
 
 private:
@@ -47,19 +58,26 @@ private:
   static const std::map<std::string, CTRL_COMMAND> configMap;
 
 public:
-  static void execCommand(Control&, Config&);
+  static bool execCommand(Control&);
   static void execConfigDefault();
 
 private:
-  static void execHelp(const string_deq&);
-  static void execConfig(const string_deq&, Config&);
-  static void execConfigCreat(const string_deq&, Config&);
-  static void execConfigLoad(const string_deq&, Config&);
-  static void execConfigAddDirectory(const string_deq&, Config&);
-  static void execConfigRemoveDirectory(const string_deq&, Config&);
+  static bool execHelp(const string_deq&);
+
+  static bool execConfig(const string_deq&);
+  static bool execConfigCreat(const string_deq&);
+  static bool execConfigLoad(const string_deq&);
+  static bool execConfigAddRow(const string_deq&);
+  static bool execConfigRemoveRow(const string_deq&);
+  static bool execConfigCreatPack(const string_deq&);
+  static bool execConfigRemovePack(const string_deq&);
+  static bool execConfigAddDirectory(const string_deq&);
+  static bool execConfigRemoveDirectory(const string_deq&);
+
+  static bool execArchive(const string_deq&, Config&);
 
   template<class MAP>
-  static CTRL_COMMAND key(const MAP&, const std::string&);
+  static CTRL_COMMAND key(const MAP& map, const std::string& key);
 
 public:
   Control() = default;
@@ -68,15 +86,15 @@ public:
   Control(const Control& control);
   ~Control() = default;
 
-  Control& operator=(const Control&);
-  Control& operator=(const std::string&);
-  Control& operator+=(const Control&);
-  Control& operator+=(const std::string&);
+  Control& operator=(const Control& control);
+  Control& operator=(const std::string& cmd);
+  Control& operator+=(const Control& control);
+  Control& operator+=(const std::string& cmd);
 
   s_command command();
-  bool command(const int, char**);
-  bool command(const std::string&);
-  bool command(const Control&);
+  bool command(const int argc, char** argv);
+  bool command(const std::string& input);
+  bool command(const Control& control);
 
   std::string incorrect();
   bool status() const;
@@ -87,9 +105,7 @@ private:
   command_deq m_commands;
   std::string m_incorrect;
 
-  void divideInput(const string_deq&);
-
-
+  void divideInput(const string_deq& input);
 };
 } //namespace mngs
 
