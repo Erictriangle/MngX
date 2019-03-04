@@ -1,28 +1,28 @@
-#ifndef PATH_CONFIG_HPP
-#define PATH_CONFIG_HPP
+#ifndef PATH_LOG_HPP
+#define PATH_LOG_HPP
 
 #include "path.hpp"
 
 
 namespace mngx
 {
-class PathConfig : public Path
+class PathLog : public Path
 {
 private:
   const std::string HOME = "/home/";
   const std::string FOLDER = ".mngx";
-  const std::string FILENAME = "MngConfig";
+  const std::string FILENAME = "MngLog";
   const std::string EXTENSION = ".txt";
 
 public:
-  PathConfig();
-  PathConfig(const std::string& path);
-  PathConfig(const PathConfig& path);
-  ~PathConfig() = default;
+  PathLog();
+  PathLog(const std::string& path);
+  PathLog(const PathLog& path);
+  ~PathLog() = default;
 
-  PathConfig& operator=(const std::string& path);
-  PathConfig& operator=(const PathConfig& path);
-  bool operator==(const PathConfig& path) const;
+  PathLog& operator=(const std::string& path);
+  PathLog& operator=(const PathLog& path);
+  bool operator==(const PathLog& path) const;
 
   virtual void setPath(const std::string& path) override;
   virtual void setPath(const Path& path) override;
@@ -31,14 +31,13 @@ public:
   const std::string getDefaultPath() const;
   const std::string getDefaultDirectory() const;
   const std::string getDefaultFilename() const;
-
+  
   bool empty() const;
-
+    
 private:
-  void setDefault();
-
-}; //PathConfig
+  void setDefult();
+};
 } //namespace mngx
 
 
-#endif //PATH_CONFIG_HPP
+#endif //PATH_LOG_HPP

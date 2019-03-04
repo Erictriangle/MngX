@@ -6,10 +6,13 @@
 #include <string>
 
 
-namespace mngx{
-namespace screen{
+namespace mngx
+{
+namespace screen
+{
 
-enum FONT{
+enum FONT
+{
   RESET = 0,
   BOLD = 1,
   UNDERSCORE = 4,

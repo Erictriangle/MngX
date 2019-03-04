@@ -4,7 +4,8 @@
 namespace mngx{
 
 
-const std::map<std::string, Control::CTRL_COMMAND> Control::flagMap{
+const std::map<std::string, Control::CTRL_COMMAND> Control::flagMap
+{
   { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
   { "-h", HELP },
   { "--help", HELP },
@@ -14,12 +15,14 @@ const std::map<std::string, Control::CTRL_COMMAND> Control::flagMap{
   { "--archive", ARCHIVE }
 };
 
-const std::map<std::string, Control::CTRL_COMMAND> Control::helpMap{
+const std::map<std::string, Control::CTRL_COMMAND> Control::helpMap
+{
   { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
   { "config", CONFIG },
 };
 
-const std::map<std::string, Control::CTRL_COMMAND> Control::configMap{
+const std::map<std::string, Control::CTRL_COMMAND> Control::configMap
+{
   { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
   { "creat", CREAT },
   { "load", LOAD },
@@ -33,8 +36,9 @@ const std::map<std::string, Control::CTRL_COMMAND> Control::configMap{
 
 
 bool
-Control::execCommand(Control& control){
-  s_command cmd = control.command();
+Control::execCommand(Control& control)
+{
+  command cmd = control.getCommand();
   auto flag = key(flagMap, cmd.flag);
 
   switch(flag){
@@ -57,7 +61,8 @@ Control::execCommand(Control& control){
 
 
 bool
-Control::execHelp(const string_deq& cmd){
+Control::execHelp(const stringDeq& cmd)
+{
     if(cmd.empty()){
       screen::help();
       return 0;
@@ -78,7 +83,8 @@ Control::execHelp(const string_deq& cmd){
 
 
 bool
-Control::execConfig(const string_deq& cmd){
+Control::execConfig(const stringDeq& cmd)
+{
     auto  subCmd = key(configMap, cmd.front());
     switch(subCmd){
     case CREAT:
@@ -113,19 +119,23 @@ Control::execConfig(const string_deq& cmd){
 
 
 void
-Control::execConfigDefault(){
+Control::execConfigDefault()
+{
   mngx::PathConfig pathConfig;
   mngx::Config* config = Config::instance();
-  if(!mngx::Path::isDirectory(pathConfig.defaultDirectory()))
-      mngx::Path::creatDirectory(pathConfig.defaultDirectory());
+  if(!mngx::Path::isDirectory(pathConfig.getDefaultPath())){
+      mngx::Path::creatDirectory(pathConfig.getDefaultDirectory());
+  }
 
-  if(!mngx::Path::isFile(pathConfig.defaultPath()))
+  if(!mngx::Path::isFile(pathConfig.getDefaultPath())){
     config->creat();
+  }
 }
 
 
 bool
-Control::execConfigCreat(const string_deq& cmd){
+Control::execConfigCreat(const stringDeq& cmd)
+{
   if(cmd.size() != 2){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
@@ -136,7 +146,8 @@ Control::execConfigCreat(const string_deq& cmd){
 
 
 bool
-Control::execConfigLoad(const string_deq& cmd){
+Control::execConfigLoad(const stringDeq& cmd)
+{
   if(cmd.size() != 2){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
@@ -147,7 +158,8 @@ Control::execConfigLoad(const string_deq& cmd){
 
 
 bool
-Control::execConfigAddRow(const string_deq& cmd){
+Control::execConfigAddRow(const stringDeq& cmd)
+{
   if(cmd.size() != 3){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
@@ -158,7 +170,8 @@ Control::execConfigAddRow(const string_deq& cmd){
 
 
 bool
-Control::execConfigRemoveRow(const string_deq& cmd){
+Control::execConfigRemoveRow(const stringDeq& cmd)
+{
   if(cmd.size() != 3){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
@@ -169,7 +182,8 @@ Control::execConfigRemoveRow(const string_deq& cmd){
 
 
 bool
-Control::execConfigCreatPack(const string_deq& cmd){
+Control::execConfigCreatPack(const stringDeq& cmd)
+{
   if(cmd.size() != 2){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
@@ -180,7 +194,8 @@ Control::execConfigCreatPack(const string_deq& cmd){
 
 
 bool
-Control::execConfigRemovePack(const string_deq& cmd){
+Control::execConfigRemovePack(const stringDeq& cmd)
+{
   if(cmd.size() != 2){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
@@ -191,30 +206,34 @@ Control::execConfigRemovePack(const string_deq& cmd){
 
 
 bool
-Control::execConfigAddDirectory(const string_deq& cmd){
+Control::execConfigAddDirectory(const stringDeq& cmd)
+{
   if(cmd.size() < 3){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
   Config* config = Config::instance();
   for(auto it = cmd.cbegin()+2; it != cmd.cend(); it++){
-    if(!config->addToPack(cmd[1], *it))
+    if(!config->addToPack(cmd[1], *it)){
       return 0;
+    }
   }
   return 1;
 }
 
 
 bool
-Control::execConfigRemoveDirectory(const string_deq& cmd){
+Control::execConfigRemoveDirectory(const stringDeq& cmd)
+{
   if(cmd.size() < 3){
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
   Config* config = Config::instance();
   for(auto it = cmd.cbegin()+2; it != cmd.cend(); it++){
-    if(!config->removeFromPack(cmd[1], *it))
+    if(!config->removeFromPack(cmd[1], *it)){
       return 0;
+    }
   }
   return 1;
 }
@@ -222,132 +241,152 @@ Control::execConfigRemoveDirectory(const string_deq& cmd){
 
 
 template<class MAP> Control::CTRL_COMMAND
- Control::key(const MAP& map, const std::string& key){
+ Control::key(const MAP& map, const std::string& key)
+ {
   return map.find(key)->second;
 }
 
 
-Control::Control(const int argc, char** argv){
-  command(argc, argv);
+Control::Control(const int argc, char** argv)
+{
+  setCommand(argc, argv);
 }
 
 
-Control::Control(const std::string& input){
-  command(input);
+Control::Control(const std::string& input)
+{
+  setCommand(input);
 }
 
 
-Control::Control(const Control& control){
-   command(control);
+Control::Control(const Control& control)
+{
+   setCommand(control);
 }
 
 
 Control&
-Control::operator=(const Control& control){
-  command(control);
+Control::operator=(const Control& control)
+{
+  setCommand(control);
   return *this;
 }
 
 
 Control&
-Control::operator=(const std::string& cmd){
-  command(cmd);
+Control::operator=(const std::string& cmd)
+{
+  setCommand(cmd);
   return *this;
 }
 
 
 Control&
-Control::operator+=(const Control& control){
-  for(auto c : control.m_commands)
-    m_commands.push_back(c);
+Control::operator+=(const Control& control)
+{
+  for(auto c : control.cmdDeq){
+    cmdDeq.push_back(c);
+  }
 
-  for(auto i : control.m_incorrect)
-    m_incorrect.push_back(i);
+  for(auto i : control.incorrect){
+    incorrect.push_back(i);
+  }
 
   return *this;
 }
 
 
 Control&
-Control::operator+=(const std::string& cmd){
+Control::operator+=(const std::string& cmd)
+{
   Control control(cmd);
-  for(auto c : control.m_commands)
-    m_commands.push_back(c);
+  for(auto c : control.cmdDeq){
+    cmdDeq.push_back(c);
+  }
 
-  for(auto i : control.m_incorrect)
-    m_incorrect.push_back(i);
+  for(auto i : control.incorrect){
+    incorrect.push_back(i);
+  }
 
   return *this;
 }
 
 
-Control::s_command
-Control::command(){
-  s_command temp = m_commands.front();
-  m_commands.pop_front();
+Control::command
+Control::getCommand()
+{
+  command temp = cmdDeq.front();
+  cmdDeq.pop_front();
   return temp;
 }
 
 bool
-Control::command(const int argc, char** argv){
+Control::setCommand(const int argc, char** argv)
+{
   std::string input;
 
   for(int i = 1; i < argc; i++){
     input += argv[i];
     input += " ";
   }
-  input.pop_back();
 
-  return command(input);
+  return setCommand(input);
 }
 
 
 bool
-Control::command(const std::string& input){
-  string_deq temp;
+Control::setCommand(const std::string& input)
+{
+  stringDeq temp;
   boost::split(temp, input, boost::is_any_of(" "));
 
   this->clear();
   divideInput(temp);
-  return !m_incorrect.empty();
+  return !incorrect.empty();
 }
 
 bool
-Control::command(const Control& control){
-  m_commands = control.m_commands;
-  m_incorrect = control.m_incorrect;
-  return m_incorrect.empty();
+Control::setCommand(const Control& control)
+{
+  cmdDeq = control.cmdDeq;
+  incorrect = control.incorrect;
+  return incorrect.empty();
 }
 
 
 std::string
-Control::incorrect(){
-  return m_incorrect;
+Control::getIncorrect()
+{
+  return incorrect;
 }
 
 
 bool
-Control::status() const{
-  return m_incorrect.empty();
+Control::status() const
+{
+  return incorrect.empty();
 }
 
 
 bool
-Control::empty() const{
-  return m_commands.empty();
+Control::empty() const
+{
+  return cmdDeq.empty();
 }
 
 
 void
-Control::clear(){
-  m_commands.clear();
-  m_incorrect.clear();
+Control::clear()
+{
+  cmdDeq.clear();
+  incorrect.clear();
 }
 
 
 void
-Control::divideInput(const string_deq& input){
-    s_command cmd{};
+Control::divideInput(const stringDeq& input)
+{
+    command cmd{};
 
     for(auto it = input.cbegin(); it != input.cend(); it++){
       if(flagMap.count(*it)){
@@ -359,13 +398,13 @@ Control::divideInput(const string_deq& input){
           it++;
         }
 
-        m_commands.push_back(cmd);
+        cmdDeq.push_back(cmd);
         cmd.flag.clear();
         cmd.arguments.clear();
         it--;
       }
       else{
-        m_incorrect = *it;
+        incorrect = *it;
         return;
       }
   }

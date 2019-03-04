@@ -1,18 +1,23 @@
 #include "tar_compress.hpp"
 
-namespace mngx{
+namespace mngx
+{
 
-TarCompress::TarCompress(const TarCompress& n_tarCompress)
-  :m_source(n_tarCompress.m_source){}
+TarCompress::TarCompress(const TarCompress& tarCompress)
+  :m_source(tarCompress.m_source)
+{
+}
 
 
-TarCompress::TarCompress(const std::string& n_source){
-  m_source.push_back(n_source);
+TarCompress::TarCompress(const std::string& source)
+{
+  m_source.push_back(source);
 }
 
 
 template<class BeginIterator, class EndIterator>
-TarCompress::TarCompress(BeginIterator begin, EndIterator end){
+TarCompress::TarCompress(BeginIterator begin, EndIterator end)
+{
   std::for_each(begin, end, [&](const std::string& str){
     m_source.push_back(str);
   });
@@ -20,20 +25,32 @@ TarCompress::TarCompress(BeginIterator begin, EndIterator end){
 
 
 TarCompress&
-TarCompress::operator=(const TarCompress& n_tarCompress){
-  m_source = n_tarCompress.m_source;
+TarCompress::operator=(const TarCompress& tarCompress)
+{
+  m_source = tarCompress.m_source;
+  return *this;
+}
+
+
+TarCompress&
+TarCompress::operator=(const std::string& source)
+{
+  m_source.clear();
+  m_source.push_back(source);
   return *this;
 }
 
 
 void
-TarCompress::add(const std::string& n_source){
-  m_source.push_back(n_source);
+TarCompress::add(const std::string& source)
+{
+  m_source.push_back(source);
 }
 
 
 template<class BeginIterator, class EndIterator> void
-TarCompress::add(BeginIterator begin, EndIterator end){
+TarCompress::add(BeginIterator begin, EndIterator end)
+{
   std::for_each(begin, end, [&](const std::string& str){
     m_source.push_back(str);
   });
@@ -41,11 +58,14 @@ TarCompress::add(BeginIterator begin, EndIterator end){
 
 
 bool
-TarCompress::creat(const std::string& n_destination){
+TarCompress::creat(const std::string& destination)
+{
   std::string command{ TAR + " " + CREAT + FILE + " "
-   + n_destination + " "};
-  for(auto src : m_source)
+    + destination + " "};
+
+  for(auto src : m_source){
     command += src + " ";
+  }
   std::system(command.c_str());
 
   //TODO - check creat archive is done
@@ -54,15 +74,18 @@ TarCompress::creat(const std::string& n_destination){
 
 
 template<class BeginIterator, class EndIterator> bool
-TarCompress::creat(const std::string& n_destination,
-  BeginIterator begin, EndIterator end){
+TarCompress::creat(const std::string& destination,
+  BeginIterator begin, EndIterator end)
+{
   clear();
   add(begin, end);
 
   std::string command{ TAR + " " + CREAT + FILE + " "
-   + n_destination + " "};
-  for(auto src : m_source)
+   + destination + " "};
+   
+  for(auto src : m_source){
     command += src + " ";
+  }
   std::system(command.c_str());
 
   //TODO - check creat archive is done
@@ -71,10 +94,11 @@ TarCompress::creat(const std::string& n_destination,
 
 
 bool
-TarCompress::extract(const std::string& n_source,
-  const std::string& n_destination = ""){
-  std::string command{ TAR  + " " + EXTRACT + FILE + " " + n_source
-    + " " + n_destination};
+TarCompress::extract(const std::string& source,
+  const std::string& destination = "")
+{
+  std::string command{ TAR  + " " + EXTRACT + FILE + " " + source
+    + " " + destination};
 
   std::system(command.c_str());
 
@@ -84,7 +108,8 @@ TarCompress::extract(const std::string& n_source,
 
 
 void
-TarCompress::clear(){
+TarCompress::clear()
+{
   m_source.clear();
 }
 

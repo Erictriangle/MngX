@@ -6,37 +6,43 @@
 #include <boost/filesystem.hpp>
 
 
-namespace mngx{
-class Path{
-protected:
-  struct{
+namespace mngx
+{
+class Path
+{
+private:
+  struct
+  {
     boost::filesystem::path directory;
     boost::filesystem::path filename;
-  } m_path;
+  } path;
 
 public:
-  static bool isFile(const std::string&);
-  static bool isFile(const Path&);
-  static bool isDirectory(const std::string&);
-  static bool isDirectory(const Path&);
+  static bool isFile(const std::string& file);
+  static bool isFile(const Path& file);
+  static bool isDirectory(const std::string& directory);
+  static bool isDirectory(const Path& directory);
 
-  static void creatDirectory(const std::string&);
-  static void creatDirectory(const Path&);
+  static void creatDirectory(const std::string& directory);
+  static void creatDirectory(const Path& directory);
 
 public:
   Path() = default;
-  virtual ~Path() = default;
+  Path(const std::string& path);
+  Path(const Path& path);
+  ~Path() = default;
 
-  Path& operator=(const std::string&);
-  Path& operator=(const Path&);
+  Path& operator=(const std::string& path);
+  Path& operator=(const Path& path);
+  bool operator==(const Path& path) const;
 
-  virtual void path(const std::string&) = 0;
-  virtual void path(const Path&) = 0;
-  virtual const std::string path() const = 0;
+  virtual void setPath(const std::string& path);
+  virtual void setPath(const Path& path);
+  virtual const std::string getPath() const;
 
-  const std::string directory() const;
-  const std::string filename() const;
-  const std::string username() const;
+  const std::string getDirectory() const;
+  const std::string getFilename() const;
+  const std::string getUsername() const;
 
   bool empty() const;
 

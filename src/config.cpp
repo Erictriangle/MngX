@@ -31,6 +31,7 @@ Config::creat()
 {
   auto file = oFile();
   if(!file->is_open()){
+    log->report("Cannot open " + pathConfig.getPath() + "file.");
     return 0;
   }
 
@@ -45,7 +46,7 @@ Config::creat()
 bool
 Config::creat(const std::string& pathConfig)
 {
-  m_pathConfig = pathConfig;
+  this->pathConfig = pathConfig;
   return creat();
 }
 
@@ -53,7 +54,7 @@ Config::creat(const std::string& pathConfig)
 bool
 Config::load(const std::string& pathConfig)
 {
-  m_pathConfig = pathConfig;
+  this->pathConfig = pathConfig;
   return 1;
 }
 
@@ -62,13 +63,16 @@ bool
 Config::addRow(const SECTION section, const std::string& row)
 {
   auto sectionStr = sectionStringMap.find(section)->second;
-  string_vec fileContent = readAllFile();
+  stringVec fileContent = readAllFile();
+
   if(rowIsRepeat(section, row, fileContent)){
+    log->report(row + " in section: " + sectionStr + " is repeat.");
     return 0;
   }
 
   auto file = oFile();
   if(!file->is_open()){
+    log->report("Cannot open " + pathConfig.getPath() + "file.");
     return 0;
   }
 
@@ -86,13 +90,16 @@ bool
 Config::removeRow(const SECTION section, const std::string& row)
 {
   auto sectionStr = sectionStringMap.find(section)->second;
-  string_vec fileContent = readAllFile();
+  stringVec fileContent = readAllFile();
+
   if(!rowIsRepeat(section, row, fileContent)){
+    log->report(row + "does not exist in: " + sectionStr + ".");
     return 0;
   }
 
   auto file = oFile();
   if(!file->is_open()){
+    log->report("Cannot open " + pathConfig.getPath() + "file.");
     return 0;
   }
 
@@ -126,14 +133,18 @@ Config::creatPack(const std::string& packName){
 
 bool
 Config::removePack(const std::string& packName){
-  string_vec fileContent = readAllFile();
+  stringVec fileContent = readAllFile();
   std::string sectionStr = sectionStringMap.find(ARCHIVE)->second;
+  
+  
   if(!packIsRepeat(ARCHIVE, packName, fileContent)){
+    log->report(packName + " does not exist.");
     return 0;
   }
 
   auto file = oFile();
   if(!file->is_open()){
+    log->report("Cannot open " + pathConfig.getPath() + "file.");
     return 0;
   }
 
@@ -148,8 +159,9 @@ Config::removePack(const std::string& packName){
   }
 
   if(*fc == (PACK + packName)){
-    write(file, fc, fileContent.cend());
-    while(fc->substr(0,5) != PACK && !stringSectionMap.count(*fc)){
+    fc++;
+    while(fc != fileContent.cend() && fc->substr(0,5) != PACK
+        && !stringSectionMap.count(*fc)){
       fc++;
     }
   }
@@ -165,14 +177,17 @@ bool
 Config::addToPack(const std::string& packName,
   const std::string& path)
 {
-  string_vec fileContent = readAllFile();
+  stringVec fileContent = readAllFile();
   std::string sectionStr = sectionStringMap.find(ARCHIVE)->second;
+
   if(repeatInPack(ARCHIVE, packName, path, fileContent)){
+    log->report(path + " exist in pack: " + packName + ".");
     return 0;
   }
 
   auto file = oFile();
   if(!file->is_open()){
+    log->report("Cannot open " + pathConfig.getPath() + "file.");
     return 0;
   }
 
@@ -203,13 +218,16 @@ Config::removeFromPack(const std::string& packName,
   const std::string& path)
 {
   std::string sectionStr = sectionStringMap.find(ARCHIVE)->second;
-  string_vec fileContent = readAllFile();
+  stringVec fileContent = readAllFile();
+
   if(!repeatInPack(ARCHIVE, packName, path, fileContent)){
+    log->report(path + " does not exist in pack: " + packName + ".");
     return 0;
   }
 
   auto file = oFile();
   if(!file->is_open()){
+    log->report("Cannot open " + pathConfig.getPath() + "file.");
     return 0;
   }
 
@@ -241,11 +259,11 @@ Config::removeFromPack(const std::string& packName,
 }
 
 
-Config::string_vec
+Config::stringVec
 Config::section(const SECTION section) const
 {
   std::string sectionStr = sectionStringMap.find(section)->second;
-  string_vec sectionContent;
+  stringVec sectionContent;
   std::string buffer;
   auto file = iFile();
 
@@ -257,11 +275,11 @@ Config::section(const SECTION section) const
 }
 
 
-Config::string_vec
+Config::stringVec
 Config::readAllFile()
 {
   std::string buffer;
-  string_vec fileContent;
+  stringVec fileContent;
   auto file = iFile();
 
   while(*file >> buffer){
@@ -272,29 +290,25 @@ Config::readAllFile()
 }
 
 
+
 std::unique_ptr<std::ofstream>
 Config::oFile()
 {
-  return (!m_pathConfig.empty())
-    ? std::make_unique<std::ofstream>(m_pathConfig.path(),
-        std::ios::trunc)
-    : std::make_unique<std::ofstream>(m_pathConfig.defaultPath(),
-        std::ios::trunc);
+  return std::make_unique<std::ofstream>(pathConfig.getPath(),
+    std::ios::trunc);
 }
 
 
 std::unique_ptr<std::ifstream>
 Config::iFile() const
 {
-  return (!m_pathConfig.empty())
-    ? std::make_unique<std::ifstream>(m_pathConfig.path())
-    : std::make_unique<std::ifstream>(m_pathConfig.defaultPath());
+  return std::make_unique<std::ifstream>(pathConfig.getPath());
 }
 
 
 bool
 Config::rowIsRepeat(const SECTION section, const std::string& row,
-  const string_vec& fileContent) const
+  const stringVec& fileContent) const
 {
   auto fc = fileContent.cbegin();
   std::string sectionStr = sectionStringMap.find(section)->second;
@@ -317,7 +331,7 @@ Config::rowIsRepeat(const SECTION section, const std::string& row,
 
 bool
 Config::packIsRepeat(const SECTION section, const std::string& packName,
-    const string_vec& fileContent) const{
+    const stringVec& fileContent) const{
   auto fc = fileContent.cbegin();
   std::string sectionStr = sectionStringMap.find(section)->second;
 
@@ -339,7 +353,7 @@ Config::packIsRepeat(const SECTION section, const std::string& packName,
 
 bool
 Config::repeatInPack(const SECTION section, const std::string& packName,
-    const std::string& row, const string_vec& fileContent) const{
+    const std::string& row, const stringVec& fileContent) const{
   if(!packIsRepeat(section, packName, fileContent))
     return 0;
 

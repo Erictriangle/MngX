@@ -26,6 +26,8 @@ elseif(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 
+#TODO - change boost prefix
+set(BOOST_ROOT "/home/eric/d/Library/boost")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREAD ON)
 set(Boost_USE_STATIC_RUNETIME OFF)

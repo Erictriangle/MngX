@@ -15,16 +15,19 @@
 #include <boost/algorithm/string.hpp>
 
 
-namespace mngx{
-class Control{
+namespace mngx
+{
+class Control
+{
 private:
-  struct s_command{
+  struct command
+  {
     std::string flag;
     std::deque<std::string> arguments;
   };
 
-  typedef std::deque<std::string> string_deq;
-  typedef std::deque<s_command> command_deq;
+  typedef std::deque<std::string> stringDeq;
+  typedef std::deque<command> commandDeq;
 
 public:
   enum CTRL_COMMAND{
@@ -58,23 +61,23 @@ private:
   static const std::map<std::string, CTRL_COMMAND> configMap;
 
 public:
-  static bool execCommand(Control&);
+  static bool execCommand(Control& cmd);
   static void execConfigDefault();
 
 private:
-  static bool execHelp(const string_deq&);
+  static bool execHelp(const stringDeq& cmd);
 
-  static bool execConfig(const string_deq&);
-  static bool execConfigCreat(const string_deq&);
-  static bool execConfigLoad(const string_deq&);
-  static bool execConfigAddRow(const string_deq&);
-  static bool execConfigRemoveRow(const string_deq&);
-  static bool execConfigCreatPack(const string_deq&);
-  static bool execConfigRemovePack(const string_deq&);
-  static bool execConfigAddDirectory(const string_deq&);
-  static bool execConfigRemoveDirectory(const string_deq&);
+  static bool execConfig(const stringDeq& cmd);
+  static bool execConfigCreat(const stringDeq& cmd);
+  static bool execConfigLoad(const stringDeq& cmd);
+  static bool execConfigAddRow(const stringDeq& cmd);
+  static bool execConfigRemoveRow(const stringDeq& cmd);
+  static bool execConfigCreatPack(const stringDeq& cmd);
+  static bool execConfigRemovePack(const stringDeq& cmd);
+  static bool execConfigAddDirectory(const stringDeq& cmd);
+  static bool execConfigRemoveDirectory(const stringDeq& cmd);
 
-  static bool execArchive(const string_deq&, Config&);
+  static bool execArchive(const stringDeq&, Config&);
 
   template<class MAP>
   static CTRL_COMMAND key(const MAP& map, const std::string& key);
@@ -91,21 +94,21 @@ public:
   Control& operator+=(const Control& control);
   Control& operator+=(const std::string& cmd);
 
-  s_command command();
-  bool command(const int argc, char** argv);
-  bool command(const std::string& input);
-  bool command(const Control& control);
+  command getCommand();
+  bool setCommand(const int argc, char** argv);
+  bool setCommand(const std::string& input);
+  bool setCommand(const Control& control);
 
-  std::string incorrect();
+  std::string getIncorrect();
   bool status() const;
   bool empty() const;
   void clear();
 
 private:
-  command_deq m_commands;
-  std::string m_incorrect;
+  commandDeq cmdDeq;
+  std::string incorrect;
 
-  void divideInput(const string_deq& input);
+  void divideInput(const stringDeq& input);
 };
 } //namespace mngs
 

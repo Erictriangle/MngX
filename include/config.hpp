@@ -2,6 +2,7 @@
 #define CONFIG_HPP
 
 #include "path_config.hpp"
+#include "log.hpp"
 
 #include <fstream>
 #include <vector>
@@ -16,7 +17,7 @@ namespace mngx
 class Config
 {
 private:
-  typedef std::vector<std::string> string_vec;
+  typedef std::vector<std::string> stringVec;
 
   const std::string PACK{"PACK-"};
 
@@ -48,22 +49,22 @@ public:
   bool addToPack(const std::string& packName, const std::string& path);
   bool removeFromPack(const std::string& packName, const std::string& path);
 
-  string_vec section(const SECTION) const;
-
+  stringVec section(const SECTION section) const;
 
 private:
-  PathConfig m_pathConfig;
+  PathConfig pathConfig;
+  Log *log = Log::instance();
 
-  string_vec readAllFile();
+  stringVec readAllFile();
   std::unique_ptr<std::ofstream> oFile();
   std::unique_ptr<std::ifstream> iFile() const;
 
   bool rowIsRepeat(const SECTION section, const std::string& row,
-    const string_vec& fileContent) const;
+    const stringVec& fileContent) const;
   bool packIsRepeat(const SECTION section, const std::string& packName,
-    const string_vec& fileContent) const;
+    const stringVec& fileContent) const;
   bool repeatInPack(const SECTION section, const std::string& packName,
-    const std::string& row, const string_vec& fileContent) const;
+    const std::string& row, const stringVec& fileContent) const;
 
   template<class FILE, class ITERATOR>
     void write(FILE& file, ITERATOR& it, const ITERATOR& end);

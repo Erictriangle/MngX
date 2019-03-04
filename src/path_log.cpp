@@ -1,45 +1,53 @@
-#include "path_config.hpp"
+#include "path_log.hpp"
 
 
 namespace mngx
 {
 
-PathConfig::PathConfig()
+PathLog::PathLog()
 {
   setDefault();
 }
 
 
-PathConfig::PathConfig(const std::string& path)
+PathLog::PathLog(const std::string& path)
 {
   setPath(path);
 }
 
 
-PathConfig::PathConfig(const PathConfig& path)
+PathLog::PathLog(const PathLog& path)
 {
   setPath(path);
 }
 
 
-PathConfig&
-PathConfig::operator=(const std::string& path)
+PathLog&
+PathLog::operator=(const std::string& path)
 {
   setPath(path);
   return *this;
 }
 
 
-PathConfig&
-PathConfig::operator=(const PathConfig& path)
+PathLog&
+PathLog::operator=(const PathLog& path)
 {
-  this->path = path.path;
+  setPath(path);
   return *this;
+}
+
+
+bool
+PathLog::operator==(const PathLog& path) const
+{
+  return (this->path.directory.native() == path.directory.native() &&
+      this->path.filename.native() == path.filename.native());
 }
 
 
 void
-PathConfig::setPath(const std::string& path)
+PathLog::setPath(const std::string& path) override
 {
   namespace fs = boost::filesystem;
 
@@ -75,7 +83,7 @@ PathConfig::setPath(const std::string& path)
 
 
 void
-PathConfig::setPath(const PathConfig& path)
+PathLog::setPath(const PathLog& path)
 {
   this->path.directory = path.directory();
   this->path.filename = path.filename();
@@ -83,7 +91,7 @@ PathConfig::setPath(const PathConfig& path)
 
 
 const std::string
-PathConfig::getPath() const
+PathLog::getPath() const
 {
   if(path.directory.empty()){
     setDefault();
@@ -92,7 +100,7 @@ PathConfig::getPath() const
 
   return (path.directory.native().back() == '/')
     ? path.directory.native() + path.filename.native()
-    : path.directory.native() + '/' + path.filename.native();
+    : path.directory.native() + '/' + path.filename.native();    
 }
 
 
@@ -134,5 +142,6 @@ PathConfig::setDefault()
   path.directory = "/home/" + username + "/" + FOLDER;
   path.filename = FILENAME + EXTENSION;
 }
+
 
 } //namespace mngx
