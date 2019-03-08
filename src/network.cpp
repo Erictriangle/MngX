@@ -21,7 +21,8 @@ Network::connect(const std::string& hostname)
   
 
   if((status = getaddrinfo(hostname.c_str(), PORT, &hints, &servinfo)) != 0){
-    log->report("getaddrinfo error: ", gai_strerror(status), ".");
+    std::string error = gai_strerror(status);
+    //log->report("getaddrinfo error: " + error + ".");
     return 0;
   }
 
@@ -39,7 +40,7 @@ Network::connect(const std::string& hostname)
   }
 
   if(ptr == nullptr){
-    log->report("Cannot establish connection with " + hostname + ".");
+    //log->report("Cannot establish connection with " + hostname + ".");
     return 0;
   }
   return 1;

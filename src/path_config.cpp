@@ -33,7 +33,7 @@ PathConfig::operator=(const std::string& path)
 PathConfig&
 PathConfig::operator=(const PathConfig& path)
 {
-  this->path = path.path;
+  setPath(path);
   return *this;
 }
 
@@ -45,12 +45,16 @@ PathConfig::setPath(const std::string& path)
 
   auto assignFilename = [&](fs::path& inputPath)->fs::path
   {
+   if(inputPath.native().back() == '/'){
+     return FILENAME + EXTENSION;
+   }
+
     return (!fs::is_directory(inputPath))
       ? inputPath.filename()
       : FILENAME + EXTENSION;
   };
 
-  auto assignDirectory = [](fs::path& inputPath)->fs::path
+  auto assignDirectory = [&](fs::path& inputPath)->fs::path
   {
     return (fs::is_directory(inputPath))
       ? inputPath
@@ -75,10 +79,10 @@ PathConfig::setPath(const std::string& path)
 
 
 void
-PathConfig::setPath(const PathConfig& path)
+PathConfig::setPath(const Path& path)
 {
-  this->path.directory = path.directory();
-  this->path.filename = path.filename();
+  this->path.directory = path.getDirectory();
+  this->path.filename = path.getFilename();
 }
 
 
@@ -86,8 +90,7 @@ const std::string
 PathConfig::getPath() const
 {
   if(path.directory.empty()){
-    setDefault();
-    return getPath();
+    return "";
   }
 
   return (path.directory.native().back() == '/')
@@ -114,7 +117,7 @@ PathConfig::getDefaultDirectory() const
 
 
 const std::string
-PathConfig::defaultFilename() const
+PathConfig::getDefaultFilename() const
 {
   return FILENAME + EXTENSION;
 }

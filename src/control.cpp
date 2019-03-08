@@ -118,21 +118,6 @@ Control::execConfig(const stringDeq& cmd)
 }
 
 
-void
-Control::execConfigDefault()
-{
-  mngx::PathConfig pathConfig;
-  mngx::Config* config = Config::instance();
-  if(!mngx::Path::isDirectory(pathConfig.getDefaultPath())){
-      mngx::Path::creatDirectory(pathConfig.getDefaultDirectory());
-  }
-
-  if(!mngx::Path::isFile(pathConfig.getDefaultPath())){
-    config->creat();
-  }
-}
-
-
 bool
 Control::execConfigCreat(const stringDeq& cmd)
 {
@@ -140,8 +125,7 @@ Control::execConfigCreat(const stringDeq& cmd)
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
-  Config* config = Config::instance();
-  return config->creat(cmd[1]);
+  return Config::instance()->creat(cmd[1]);
 }
 
 
@@ -152,8 +136,7 @@ Control::execConfigLoad(const stringDeq& cmd)
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
-  Config* config = Config::instance();
-  return config->load(cmd[1]);
+  return Config::instance()->load(cmd[1]);
 }
 
 
@@ -164,8 +147,7 @@ Control::execConfigAddRow(const stringDeq& cmd)
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
-  Config* config = Config::instance();
-  return config->addRow(Config::GLOBAL, cmd[1] + "=" + cmd[2]);
+  return Config::instance()->addRow(Config::GLOBAL, cmd[1] + "=" + cmd[2]);
 }
 
 
@@ -176,8 +158,7 @@ Control::execConfigRemoveRow(const stringDeq& cmd)
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
-  Config* config = Config::instance();
-  return config->removeRow(Config::GLOBAL, cmd[1] + "=" + cmd[2]);
+  return Config::instance()->removeRow(Config::GLOBAL, cmd[1] + "=" + cmd[2]);
 }
 
 
@@ -188,8 +169,7 @@ Control::execConfigCreatPack(const stringDeq& cmd)
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
-  Config* config = Config::instance();
-  return config->creatPack(cmd[1]);
+  return Config::instance()->creatPack(cmd[1]);
 }
 
 
@@ -200,8 +180,7 @@ Control::execConfigRemovePack(const stringDeq& cmd)
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
-  Config* config = Config::instance();
-  return config->removePack(cmd[1]);
+  return Config::instance()->removePack(cmd[1]);
 }
 
 
@@ -212,9 +191,13 @@ Control::execConfigAddDirectory(const stringDeq& cmd)
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
+
   Config* config = Config::instance();
+  Path path;
+
   for(auto it = cmd.cbegin()+2; it != cmd.cend(); it++){
-    if(!config->addToPack(cmd[1], *it)){
+    path = *it;
+    if(!config->addToPack(cmd[1], path.getPath())){
       return 0;
     }
   }
@@ -229,9 +212,13 @@ Control::execConfigRemoveDirectory(const stringDeq& cmd)
     mngx::screen::wrongArgumentsNumber("-c | --config");
     return 0;
   }
+
   Config* config = Config::instance();
+  Path path;
+
   for(auto it = cmd.cbegin()+2; it != cmd.cend(); it++){
-    if(!config->removeFromPack(cmd[1], *it)){
+    path = *it;
+    if(!config->removeFromPack(cmd[1], path.getPath())){
       return 0;
     }
   }
@@ -330,7 +317,7 @@ Control::setCommand(const int argc, char** argv)
     input += " ";
   }
 
-  return setCommand(input);
+  return setCommand(input.substr(0, input.size()-1));
 }
 
 

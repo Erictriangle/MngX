@@ -13,7 +13,7 @@ Path::isFile(const std::string& file)
 bool
 Path::isFile(const Path& file)
 {
-  return boost::filesystem::is_regular_file(file.path());
+  return boost::filesystem::is_regular_file(file.getPath());
 }
 
 
@@ -27,7 +27,7 @@ Path::isDirectory(const std::string& directory
 bool
 Path::isDirectory(const Path& directory)
 {
-  return boost::filesystem::is_directory(directory.path());
+  return boost::filesystem::is_directory(directory.getDirectory());
 }
 
 
@@ -41,7 +41,7 @@ Path::creatDirectory(const std::string& directory)
 void
 Path::creatDirectory(const Path& directory)
 {
-  boost::filesystem::create_directory(directory.path());
+  boost::filesystem::create_directory(directory.getDirectory());
 }
 
 
@@ -51,7 +51,7 @@ Path::Path(const std::string& path)
 }
 
 
-Path::Path(const std::string& path)
+Path::Path(const Path& path)
 {
   setPath(path);
 }
@@ -76,8 +76,8 @@ Path::operator=(const Path& path)
 bool
 Path::operator==(const Path& path) const
 {
-  return (this->path.directory.native() == path.directory.native() &&
-      this->path.filename.native() == path.filename.native());
+  return (this->path.directory.native() == path.path.directory.native() &&
+      this->path.filename.native() == path.path.filename.native());
 }
 
 
@@ -87,16 +87,20 @@ Path::setPath(const std::string& path)
   namespace fs = boost::filesystem;
 
   auto assignFilename = [&](fs::path& inputPath)->fs::path{
-    return (!fs::is_directory(input_path))
+    if(inputPath.native().back() == '/'){
+      return "";
+    }
+
+    return (!fs::is_directory(inputPath))
     ? inputPath.filename()
     : "";
-  }
+  };
 
   auto assignDirectory = [&](fs::path& inputPath)->fs::path{
     return (fs::is_directory(inputPath))
     ? inputPath
     : inputPath.remove_filename();
-  }
+  };
 
   clear();
   fs::path inputPath(path);

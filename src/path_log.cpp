@@ -41,13 +41,13 @@ PathLog::operator=(const PathLog& path)
 bool
 PathLog::operator==(const PathLog& path) const
 {
-  return (this->path.directory.native() == path.directory.native() &&
-      this->path.filename.native() == path.filename.native());
+  return (this->path.directory.native() == path.getDirectory() &&
+      this->path.filename.native() == path.getFilename());
 }
 
 
 void
-PathLog::setPath(const std::string& path) override
+PathLog::setPath(const std::string& path) 
 {
   namespace fs = boost::filesystem;
 
@@ -83,10 +83,10 @@ PathLog::setPath(const std::string& path) override
 
 
 void
-PathLog::setPath(const PathLog& path)
+PathLog::setPath(const Path& path)
 {
-  this->path.directory = path.directory();
-  this->path.filename = path.filename();
+  this->path.directory = path.getDirectory();
+  this->path.filename = path.getFilename();
 }
 
 
@@ -94,8 +94,7 @@ const std::string
 PathLog::getPath() const
 {
   if(path.directory.empty()){
-    setDefault();
-    return getPath();
+    return "";
   }
 
   return (path.directory.native().back() == '/')
@@ -105,7 +104,7 @@ PathLog::getPath() const
 
 
 const std::string
-PathConfig::getDefaultPath() const
+PathLog::getDefaultPath() const
 {
   std::string username = getenv("USER");
   return HOME + username + "/" + FOLDER + "/" +
@@ -114,7 +113,7 @@ PathConfig::getDefaultPath() const
 
 
 const std::string
-PathConfig::getDefaultDirectory() const
+PathLog::getDefaultDirectory() const
 {
   std::string username = getenv("USER");
   return HOME + username + "/" + FOLDER;
@@ -122,21 +121,21 @@ PathConfig::getDefaultDirectory() const
 
 
 const std::string
-PathConfig::defaultFilename() const
+PathLog::getDefaultFilename() const
 {
   return FILENAME + EXTENSION;
 }
 
 
 bool
-PathConfig::empty() const
+PathLog::empty() const
 {
   return path.directory.empty();
 }
 
 
 void
-PathConfig::setDefault()
+PathLog::setDefault()
 {
   std::string username = getenv("USER");
   path.directory = "/home/" + username + "/" + FOLDER;

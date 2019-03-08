@@ -10,7 +10,7 @@ namespace mngx
 {
 class Path
 {
-private:
+protected:
   struct
   {
     boost::filesystem::path directory;

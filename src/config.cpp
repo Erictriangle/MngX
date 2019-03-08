@@ -1,9 +1,10 @@
 #include "config.hpp"
 
 
+//TODO - check fc is correct
+
 namespace mngx
 {
-
 
 const std::map<Config::SECTION, std::string> Config::sectionStringMap
 {
@@ -26,12 +27,45 @@ Config::instance()
 }
 
 
+Config::Config()
+{
+  if(!Path::isDirectory(pathConfig.getDefaultDirectory())){
+    Path::creatDirectory(pathConfig.getDefaultDirectory());
+  }
+
+  if(!Path::isFile(pathConfig.getDefaultPath())){
+    if(!creat()){
+      BOOST_LOG(logger) << "-=[ ERROR ]=- Cannot creat default config file.";
+      throw;
+    }
+  }
+  else{
+    readEntireFile();
+  }
+}
+
+
+Config::~Config()
+{
+  save();
+}
+
+
 bool
 Config::creat()
 {
+  if(Path::isFile(pathConfig.getPath())){
+    BOOST_LOG(logger) << "Cannot creat " << pathConfig.getPath() 
+        << " file. File currently exists.";
+    return 0;
+  }
+  
+  if(!creatDirectory(pathConfig.getDirectory())){
+    return 0;
+  }
+
   auto file = oFile();
-  if(!file->is_open()){
-    log->report("Cannot open " + pathConfig.getPath() + "file.");
+  if(!fileIsOpen(*file)){
     return 0;
   }
 
@@ -39,14 +73,31 @@ Config::creat()
     *file << ssm.second << "\n";
   }
 
-  return 1;
+  file->close();
+  return readEntireFile();
+}
+
+
+bool 
+Config::creat(const std::string& pathConfig)
+{
+  if(!save()){
+    return 0;
+  }
+
+  this->pathConfig = pathConfig;
+  return creat();
 }
 
 
 bool
-Config::creat(const std::string& pathConfig)
+Config::creat(const PathConfig& pathConfig)
 {
-  this->pathConfig = pathConfig;
+  if(!save()){
+    return 0;
+  }
+
+  this->pathConfig = pathConfig.getPath();
   return creat();
 }
 
@@ -54,34 +105,30 @@ Config::creat(const std::string& pathConfig)
 bool
 Config::load(const std::string& pathConfig)
 {
+  if(!save()){
+    return 0;
+  }
+  
   this->pathConfig = pathConfig;
-  return 1;
+  return readEntireFile();
 }
 
 
-bool
+bool 
 Config::addRow(const SECTION section, const std::string& row)
 {
+  if(rowIsRepeat(section, row)){
+    BOOST_LOG(logger) << row << " is repeat.";
+    return 0;
+  }
+
+  auto fc = fileContent.cbegin();
   auto sectionStr = sectionStringMap.find(section)->second;
-  stringVec fileContent = readAllFile();
 
-  if(rowIsRepeat(section, row, fileContent)){
-    log->report(row + " in section: " + sectionStr + " is repeat.");
-    return 0;
+  while( *fc != sectionStr){
+    fc++;
   }
-
-  auto file = oFile();
-  if(!file->is_open()){
-    log->report("Cannot open " + pathConfig.getPath() + "file.");
-    return 0;
-  }
-
-  for(auto fc : fileContent){
-    *file << fc << "\n";
-    if(fc == sectionStr){
-      *file << row << "\n";
-    }
-  }
+  fileContent.insert(++fc, row);
   return 1;
 }
 
@@ -89,308 +136,309 @@ Config::addRow(const SECTION section, const std::string& row)
 bool
 Config::removeRow(const SECTION section, const std::string& row)
 {
+  if(!rowIsRepeat(section, row)){
+    BOOST_LOG(logger) << row << " didn't exist!";
+    return 0;
+  }
+
+  auto fc = fileContent.cbegin();
   auto sectionStr = sectionStringMap.find(section)->second;
-  stringVec fileContent = readAllFile();
 
-  if(!rowIsRepeat(section, row, fileContent)){
-    log->report(row + "does not exist in: " + sectionStr + ".");
-    return 0;
+  while(*fc != sectionStr){
+    fc++;
   }
+  
+  while(*fc != row){
+    fc++;
+  }
+  fileContent.erase(fc);
 
-  auto file = oFile();
-  if(!file->is_open()){
-    log->report("Cannot open " + pathConfig.getPath() + "file.");
+  return 1;
+}
+
+
+bool 
+Config::creatPack(const std::string& packName)
+{
+  if(rowIsRepeat(ARCHIVE, PACK + packName)){
+    BOOST_LOG(logger) << packName << " currently exists.";
     return 0;
   }
 
   auto fc = fileContent.cbegin();
+  auto sectionStr = sectionStringMap.find(ARCHIVE)->second;
+
   while(*fc != sectionStr){
-    write(file, fc, fileContent.cend());
+    fc++;
   }
-  write(file, fc, fileContent.cend());
+  fileContent.insert(++fc, PACK + packName);
+  
+  return 1;
+}
 
-  while(*fc != row && !stringSectionMap.count(*fc)) {
-    write(file, fc, fileContent.cend());
+
+bool
+Config::removePack(const std::string& packName)
+{
+  if(!rowIsRepeat(ARCHIVE, PACK + packName)){
+    BOOST_LOG(logger) << packName << " didn't exists.";
+    return 0;
   }
 
-  if(*fc == row){
+  auto fc = fileContent.cbegin();
+  auto current = fc;
+  auto sectionStr = sectionStringMap.find(ARCHIVE)->second;
+
+  while(*fc != sectionStr){
+    fc++;
+  }
+  fc++;
+
+  while(*fc != (PACK + packName)){
     fc++;
   }
 
-  while(fc != fileContent.cend()){
-    write(file, fc, fileContent.cend());
+  do{
+    current = fc++;
+    fileContent.erase(current);
   }
-
+  while(fc != fileContent.cend() && (fc->substr(0,5) != PACK)
+      && !stringSectionMap.count(*fc));
+  
   return 1;
 }
 
 
 bool
-Config::creatPack(const std::string& packName){
-  return addRow(ARCHIVE, PACK + packName);
-}
-
-
-bool
-Config::removePack(const std::string& packName){
-  stringVec fileContent = readAllFile();
-  std::string sectionStr = sectionStringMap.find(ARCHIVE)->second;
-  
-  
-  if(!packIsRepeat(ARCHIVE, packName, fileContent)){
-    log->report(packName + " does not exist.");
-    return 0;
-  }
-
-  auto file = oFile();
-  if(!file->is_open()){
-    log->report("Cannot open " + pathConfig.getPath() + "file.");
+Config::addToPack(const std::string& packName, const std::string& path)
+{
+  if(repeatInPack(packName, path)){
+    BOOST_LOG(logger) << path << " in " << packName 
+        << " currently exists.";
     return 0;
   }
 
   auto fc = fileContent.cbegin();
+  auto sectionStr = sectionStringMap.find(ARCHIVE)->second;
+
   while(*fc != sectionStr){
-    write(file, fc, fileContent.cend());
-  }
-  write(file, fc, fileContent.cend());
-
-  while(*fc != (PACK + packName) && !stringSectionMap.count(*fc)){
-    write(file, fc, fileContent.cend());
-  }
-
-  if(*fc == (PACK + packName)){
     fc++;
-    while(fc != fileContent.cend() && fc->substr(0,5) != PACK
-        && !stringSectionMap.count(*fc)){
-      fc++;
-    }
   }
 
-  while(fc != fileContent.cend()){
-    write(file, fc, fileContent.cend());
+  while(*fc != (PACK + packName)){
+    fc++;
   }
+  fileContent.insert(++fc, path);
   return 1;
 }
 
 
-bool
-Config::addToPack(const std::string& packName,
-  const std::string& path)
+bool 
+Config::removeFromPack(const std::string& packName, const std::string& path)
 {
-  stringVec fileContent = readAllFile();
-  std::string sectionStr = sectionStringMap.find(ARCHIVE)->second;
-
-  if(repeatInPack(ARCHIVE, packName, path, fileContent)){
-    log->report(path + " exist in pack: " + packName + ".");
-    return 0;
-  }
-
-  auto file = oFile();
-  if(!file->is_open()){
-    log->report("Cannot open " + pathConfig.getPath() + "file.");
+  if(!repeatInPack(packName, path)){
+    BOOST_LOG(logger) << path << " in " << packName  
+        << " didn't exists.";
     return 0;
   }
 
   auto fc = fileContent.cbegin();
+  auto sectionStr = sectionStringMap.find(ARCHIVE)->second;
+
   while(*fc != sectionStr){
-    write(file, fc, fileContent.cend());
-  }
-  write(file, fc, fileContent.cend());
-
-  while(*fc != (PACK + packName) && !stringSectionMap.count(*fc)){
-    write(file, fc, fileContent.cend());
+    fc++;
   }
 
-  if(*fc == (PACK + packName)){
-    write(file, fc, fileContent.cend());
-    *file << path << "\n";
+  while(*fc != (PACK + packName)){
+    fc++;
   }
 
-  while(fc != fileContent.cend()){
-    write(file, fc, fileContent.cend());
+  while(*fc != path){
+    fc++;
   }
-  return 1;
-}
-
-
-bool
-Config::removeFromPack(const std::string& packName,
-  const std::string& path)
-{
-  std::string sectionStr = sectionStringMap.find(ARCHIVE)->second;
-  stringVec fileContent = readAllFile();
-
-  if(!repeatInPack(ARCHIVE, packName, path, fileContent)){
-    log->report(path + " does not exist in pack: " + packName + ".");
-    return 0;
-  }
-
-  auto file = oFile();
-  if(!file->is_open()){
-    log->report("Cannot open " + pathConfig.getPath() + "file.");
-    return 0;
-  }
-
-  auto fc = fileContent.cbegin();
-  while(*fc != sectionStr){
-    write(file, fc, fileContent.cend());
-  }
-  write(file, fc, fileContent.cend());
-
-  while(*fc != (PACK + packName) && !stringSectionMap.count(*fc)){
-    write(file, fc, fileContent.cend());
-  }
-
-  if(*fc == (PACK + packName)){
-    write(file, fc, fileContent.cend());
-    while(*fc != path && !stringSectionMap.count(*fc) && fc->substr(0,5) != PACK){
-      write(file, fc, fileContent.cend());
-    }
-
-    if(*fc == path){
-      fc++;
-    }
-  }
-
-  while(fc != fileContent.cend()){
-    write(file, fc, fileContent.cend());
-  }
+  fileContent.erase(fc);
   return 1;
 }
 
 
 Config::stringVec
-Config::section(const SECTION section) const
+Config::getSection(const SECTION section) const
 {
-  std::string sectionStr = sectionStringMap.find(section)->second;
-  stringVec sectionContent;
-  std::string buffer;
-  auto file = iFile();
-
-  while(*file >> buffer && buffer != sectionStr);
-  while(*file >> buffer && !stringSectionMap.count(buffer)){
-    sectionContent.push_back(buffer);
+  stringVec temp;
+  auto fc = fileContent.cbegin();
+  auto sectionStr = sectionStringMap.find(section)->second;
+  
+  while(*fc != sectionStr){
+    fc++;
   }
-  return sectionContent;
+
+  while(fc != fileContent.cend() && !stringSectionMap.count(*fc)){
+    temp.push_back(*fc);
+    fc++;
+  }
+  return temp;
 }
 
 
 Config::stringVec
-Config::readAllFile()
+Config::getPack(const std::string& packName) const
 {
+  stringVec temp;
+  auto fc = fileContent.cbegin();
+  auto sectionStr = sectionStringMap.find(ARCHIVE)->second;
+
+  while(*fc != sectionStr){
+    fc++;
+  }
+
+  while(*fc != (PACK + packName)){
+    fc++;
+  }
+
+  while(fc != fileContent.cend() && fc->substr(0,5) != PACK 
+      && stringSectionMap.count(*fc)){
+    temp.push_back(*fc);
+  }
+  return temp;
+}
+
+
+bool
+Config::readEntireFile()
+{
+  fileContent.clear();
+
   std::string buffer;
-  stringVec fileContent;
-  auto file = iFile();
+  auto file = isFile();
+  if(!fileIsOpen(*file)){
+    return 0;
+  }
 
   while(*file >> buffer){
     fileContent.push_back(buffer);
   }
 
-  return fileContent;
+  if(fileContent.empty()){
+    BOOST_LOG(logger) << "-=[ ERROR ]=- The loaded file is empty.";
+    return 0;
+  }
+
+  return 1;
 }
 
 
+bool 
+Config::save()
+{
+  auto file = oFile();
+  if(!fileIsOpen(*file)){
+    BOOST_LOG(logger) << "Cannot save file content.";
+    return 0;
+  }
 
-std::unique_ptr<std::ofstream>
+  for(auto fc : fileContent){
+    *file << fc << "\n";
+  }
+  return 1;
+}
+
+
+bool
+Config::rowIsRepeat(const SECTION section, const std::string& row)
+{
+  auto fc = fileContent.cbegin();
+  auto end = fileContent.cend();
+  auto sectionStr = sectionStringMap.find(section)->second;
+
+  while(fc != end && *fc != sectionStr){
+    fc++;
+  }
+
+  if(*fc == sectionStr){
+    fc++;
+  }
+
+  while(fc != end && *fc != row && !stringSectionMap.count(*fc)){
+    fc++;
+  }
+
+  return (*fc == row)
+    ? 1
+    : 0;
+}
+
+
+bool
+Config::repeatInPack(const std::string& packName, const std::string& path)
+{
+  auto fc = fileContent.cbegin();
+  auto end = fileContent.cend();
+  auto sectionStr = sectionStringMap.find(ARCHIVE)->second;
+
+  while(fc != end && *fc != sectionStr){
+    fc++;
+  }
+
+  if(*fc == sectionStr){
+    fc++;
+  }
+
+  while(fc != end && *fc != (PACK + packName)
+      && !stringSectionMap.count(*fc)){
+    fc++;
+  }
+
+  if(*fc == (PACK + packName)){
+    fc++;
+    while(fc != end && *fc != path && fc->substr(0,5) != PACK 
+        && !stringSectionMap.count(*fc)){
+      fc++;
+    }
+    if(*fc == path){
+      return 1;
+    }
+  }
+  return 0;
+}
+
+
+std::unique_ptr<std::ofstream> 
 Config::oFile()
 {
   return std::make_unique<std::ofstream>(pathConfig.getPath(),
-    std::ios::trunc);
+      std::ios::trunc);
 }
 
 
-std::unique_ptr<std::ifstream>
-Config::iFile() const
+std::unique_ptr<std::ifstream> 
+Config::isFile()
 {
   return std::make_unique<std::ifstream>(pathConfig.getPath());
 }
 
 
-bool
-Config::rowIsRepeat(const SECTION section, const std::string& row,
-  const stringVec& fileContent) const
+template<class DIR> bool
+Config::creatDirectory(const DIR& dir)
 {
-  auto fc = fileContent.cbegin();
-  std::string sectionStr = sectionStringMap.find(section)->second;
-
-  while(fc != fileContent.cend() && *fc != sectionStr){
-    fc++;
-  }
-
-  if(fc != fileContent.cend()){
-    fc++;
-  }
-
-  while(fc != fileContent.cend() && *fc != row &&
-      !stringSectionMap.count(*fc)){
-    fc++;
-  }
-  return(*fc == row) ? true : false;
-}
-
-
-bool
-Config::packIsRepeat(const SECTION section, const std::string& packName,
-    const stringVec& fileContent) const{
-  auto fc = fileContent.cbegin();
-  std::string sectionStr = sectionStringMap.find(section)->second;
-
-  while(fc != fileContent.cend() && *fc != sectionStr){
-    fc++;
-  }
-
-  if(fc != fileContent.cend()){
-    fc++;
-  }
-
-  while(fc != fileContent.cend() && *fc != (PACK + packName) &&
-    !stringSectionMap.count(*fc)){
-    fc++;
-  }
-  return (*fc == (PACK + packName)) ? true : false;
-}
-
-
-bool
-Config::repeatInPack(const SECTION section, const std::string& packName,
-    const std::string& row, const stringVec& fileContent) const{
-  if(!packIsRepeat(section, packName, fileContent))
+  Path::creatDirectory(dir);
+  if(!Path::isDirectory(dir)){
+    BOOST_LOG(logger) << "-=[ ERROR ]=- Cannot creat " << dir 
+        << " directory.";
     return 0;
-
-  std::string sectionStr = sectionStringMap.find(section)->second;
-  auto fc = fileContent.cbegin();
-
-  while(fc != fileContent.cend() && *fc != sectionStr){
-    fc++;
   }
-
-  if(fc != fileContent.cend()){
-    fc++;
-  }
-
-  while(fc != fileContent.cend() && *fc != (PACK + packName)){
-    fc++;
-  }
-
-  if(fc != fileContent.cend()){
-    fc++;
-  }
-
-  while(fc != fileContent.cend() && *fc != row &&
-      !stringSectionMap.count(*fc) && fc->substr(0,5) != PACK){
-    fc++;
-  }
-  return(*fc == row) ? true : false;
+  return 1;
 }
 
 
-template<class FILE, class ITERATOR> void
-Config::write(FILE& file, ITERATOR& it, const ITERATOR& end){
-  if(it == end){
-    return;
+template<class FILE> bool
+Config::fileIsOpen(FILE& file)
+{
+  if(!file.is_open()){
+    BOOST_LOG(logger) << "-=[ ERROR ]=- Cannot open/creat " 
+        << pathConfig.getPath() << " file.";
+    return 0;
   }
-  *file << *it << "\n";
-  it++;
+  return 1;
 }
 
 

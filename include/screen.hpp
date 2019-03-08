@@ -1,6 +1,7 @@
 #ifndef SCREEN_HPP
 #define SCREEN_HPP
 
+#include "log.hpp"
 
 #include <iostream>
 #include <string>
@@ -48,6 +49,7 @@ void incorrectFlag(const std::string& flag);
 void wrongArgumentsNumber(const std::string& cmd);
 void incorrectSubcommand(const std::string &flag, const std::string& cmd);
 
+void report(const std::string& statement);
 
 } //namespace screen
 } //namespace mngx

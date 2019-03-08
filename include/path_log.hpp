@@ -35,7 +35,7 @@ public:
   bool empty() const;
     
 private:
-  void setDefult();
+  void setDefault();
 };
 } //namespace mngx
 

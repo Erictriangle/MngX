@@ -8,6 +8,7 @@ BOOST_AUTO_TEST_SUITE( Control )
 
 BOOST_AUTO_TEST_CASE( constructors )
 {
+  mngx::log::init();
   mngx::Control conrtrol;
 }
 

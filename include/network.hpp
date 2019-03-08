@@ -29,7 +29,7 @@ class Network
 {
 private:
   const char* PORT = "7747";
-  const unsigned int MAXDATASIZE = 100;
+//  const unsigned int MAXDATASIZE = 100;
 
 
 public:
@@ -45,7 +45,6 @@ private:
   std::string hostname;
   int socket;
   addrinfo *servinfo;
-  Log *log = Log::instance();
 
   addrinfo getHints();
 

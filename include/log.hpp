@@ -1,43 +1,35 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
-#include "path_log.hpp"
-
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <deque>
 
+#include <boost/move/utility_core.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/sources/logger.hpp>
+
+BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(mngLog, boost::log::sources::logger_mt)
 
 namespace mngx
 {
-class Log
+namespace log
 {
-private:
-  typedef std::deque<std::string> stringDeq;
+namespace logging = boost::log;
+namespace src = boost::log::sources;
+namespace sinks = boost::log::sinks;
+namespace keywords = boost::log::keywords;
 
-private:
-  Log() = default;
-  ~Log() = default;
+void init();
 
-public:
-  static Log* instance();
-
-  friend std::ostream& operator<<(std::ostream& os, Log log);
-
-  void report(const std::string& log);
-  void report(const char* log ...);
-  const std::string getReport();
-  
-  void setPath(const std::string& path);
-
-  bool empty();
-
-private:
-  stringDeq log;
-  PathLog path;
-};
-}
-
+} //namespace log
+} //namespace mngx
 
 #endif //LOG_HPP

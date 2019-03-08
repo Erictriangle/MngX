@@ -1,6 +1,7 @@
 #ifndef CONTROL_HPP
 #define CONTROL_HPP
 
+#include "log.hpp"
 #include "path.hpp"
 #include "path_config.hpp"
 #include "config.hpp"
@@ -32,24 +33,24 @@ private:
 public:
   enum CTRL_COMMAND{
     //flag
-    UNKNOWN_COMMAND = 0,
-    HELP = 1,
-    CONFIG = 2,
-    ARCHIVE = 3,
+    UNKNOWN_COMMAND,
+    HELP,
+    CONFIG,
+    ARCHIVE,
 
     //subcommand
-    CREAT = 100,
-    ADD = 101,
-    REMOVE = 102,
-    LOAD = 103,
+    CREAT,
+    ADD,
+    REMOVE,
+    LOAD,
 
     //config subcommand
-    ADD_ROW = 200,
-    REMOVE_ROW = 201,
-    CREAT_PACK = 202,
-    REMOVE_PACK = 203,
-    ADD_DIRECTORY = 204,
-    REMOVE_DIRECTORY = 205
+    ADD_ROW,
+    REMOVE_ROW,
+    CREAT_PACK,
+    REMOVE_PACK,
+    ADD_DIRECTORY,
+    REMOVE_DIRECTORY
 
     //archive subcommand
 
@@ -62,7 +63,6 @@ private:
 
 public:
   static bool execCommand(Control& cmd);
-  static void execConfigDefault();
 
 private:
   static bool execHelp(const stringDeq& cmd);
@@ -107,6 +107,7 @@ public:
 private:
   commandDeq cmdDeq;
   std::string incorrect;
+  log::src::logger_mt& logger = mngLog::get();
 
   void divideInput(const stringDeq& input);
 };
