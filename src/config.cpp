@@ -271,6 +271,7 @@ Config::getSection(const SECTION section) const
   while(*fc != sectionStr){
     fc++;
   }
+  fc++;
 
   while(fc != fileContent.cend() && !stringSectionMap.count(*fc)){
     temp.push_back(*fc);
@@ -294,6 +295,7 @@ Config::getPack(const std::string& packName) const
   while(*fc != (PACK + packName)){
     fc++;
   }
+  fc++;
 
   while(fc != fileContent.cend() && fc->substr(0,5) != PACK 
       && stringSectionMap.count(*fc)){

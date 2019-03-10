@@ -3,15 +3,16 @@
 
 
 #include "config.hpp"
-#include <iostream>
+#include "log.hpp"
 #include <boost/filesystem.hpp>
+
 
 
 BOOST_AUTO_TEST_SUITE( Config )
 
+
 BOOST_AUTO_TEST_CASE( singleton )
 {
-  mngx::log::init();
   mngx::Config* config1 = mngx::Config::instance();
   mngx::Config* config2 = mngx::Config::instance();
   mngx::Config* copy(config1);
@@ -23,7 +24,6 @@ BOOST_AUTO_TEST_CASE( singleton )
 
 BOOST_AUTO_TEST_CASE( methods )
 {
-  mngx::log::init();
   std::string user = getenv("USER");
   std::string currentPath = boost::filesystem::current_path().native();
 
@@ -70,10 +70,9 @@ BOOST_AUTO_TEST_CASE( methods )
   std::vector<std::string> archiveFromFile =
     config->getSection(mngx::Config::ARCHIVE);
 
+
   BOOST_TEST( global == globalFromFile );
   BOOST_TEST( archive == archiveFromFile );
-  for(auto a : archiveFromFile)
-    std::cout << a << "\n";
 
   global.pop_back();
   archive.pop_back();
@@ -87,6 +86,7 @@ BOOST_AUTO_TEST_CASE( methods )
   globalFromFile = config->getSection(mngx::Config::GLOBAL);
   archiveFromFile = config->getSection(mngx::Config::ARCHIVE);
 
+
   BOOST_TEST( global == globalFromFile );
   BOOST_TEST( archive == archiveFromFile );
 
@@ -98,6 +98,7 @@ BOOST_AUTO_TEST_CASE( methods )
 
   archiveFromFile = config->getSection(mngx::Config::ARCHIVE);
   BOOST_TEST( archive == archiveFromFile );
+
 
   boost::filesystem::remove("MngConfig.txt");
 }

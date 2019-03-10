@@ -1,6 +1,8 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
+#include "path_log.hpp"
+
 #include <iostream>
 
 #include <boost/move/utility_core.hpp>
@@ -16,7 +18,9 @@
 #include <boost/log/sources/global_logger_storage.hpp>
 #include <boost/log/sources/logger.hpp>
 
+
 BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(mngLog, boost::log::sources::logger_mt)
+
 
 namespace mngx
 {

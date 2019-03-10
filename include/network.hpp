@@ -29,7 +29,8 @@ class Network
 {
 private:
   const char* PORT = "7747";
-//  const unsigned int MAXDATASIZE = 100;
+  const unsigned int MAXDATASIZE = 256;
+  const unsigned int MAXFILENAMESIZE = 255;
 
 
 public:
@@ -39,13 +40,18 @@ public:
   bool connect(const std::string& hostname);
   void close();
 
-  
+  bool send(const std::string& filename);
+  bool received();
 
 private:
   std::string hostname;
   int socket;
   addrinfo *servinfo;
+  std::string filename;
 
+  log::src::logger_mt& logger = mngLog::get();
+
+private:
   addrinfo getHints();
 
 }; //class Network
