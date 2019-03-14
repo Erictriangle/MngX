@@ -12,7 +12,9 @@ const std::map<std::string, Control::CTRL_COMMAND> Control::flagMap
   { "-c", CONFIG },
   { "--config", CONFIG },
   { "-a", ARCHIVE },
-  { "--archive", ARCHIVE }
+  { "--archive", ARCHIVE },
+  { "-n", NETWORK },
+  { "--network", NETWORK}
 };
 
 const std::map<std::string, Control::CTRL_COMMAND> Control::helpMap
@@ -35,6 +37,23 @@ const std::map<std::string, Control::CTRL_COMMAND> Control::configMap
 };
 
 
+const std::map<std::string, Control::CTRL_COMMAND> Control::archiveMap
+{
+  { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
+  { "creat", CREAT },
+  { "extract", EXTRACT }
+};
+
+
+const std::map<std::string, Control::CTRL_COMMAND> Control::networkMap
+{
+  { "UNKNOWN COMMAND", UNKNOWN_COMMAND },
+  { "send", SEND },
+  { "download", DOWNLOAD },
+  { "check", CHECK }
+};
+
+
 bool
 Control::execCommand(Control& control)
 {
@@ -52,7 +71,11 @@ Control::execCommand(Control& control)
     return execConfig(cmd.arguments);
 
   case ARCHIVE:
-    //TODO - return execArchive(cmd.arguments, config);
+    return execArchive(cmd.arguments);
+
+  case NETWORK:
+    return execNetwork(cmd.arguments);
+    return 0;
 
   default:
     throw " -=[ EXCEPTION ]=-  cotrol flow exceptions!";
@@ -87,6 +110,9 @@ Control::execConfig(const stringDeq& cmd)
 {
     auto  subCmd = key(configMap, cmd.front());
     switch(subCmd){
+    case UNKNOWN_COMMAND:
+      return 0;
+
     case CREAT:
       return execConfigCreat(cmd);
 
@@ -225,6 +251,103 @@ Control::execConfigRemoveDirectory(const stringDeq& cmd)
   return 1;
 }
 
+
+bool 
+Control::execArchive(const stringDeq& cmd)
+{
+  auto subCmd = key(archiveMap, cmd.front());
+  switch(subCmd){
+  case UNKNOWN_COMMAND:
+    return 0;
+
+  case CREAT:
+    return execArchiveCreat(cmd);
+
+  case EXTRACT:
+    return execArchiveExtract(cmd);
+
+  default:
+    screen::incorrectSubcommand("-a | --archive", cmd.front());
+    return 0;
+  }
+}
+
+
+bool 
+Control::execArchiveCreat(const stringDeq& cmd)
+{
+  TarCompress tarCompress;
+  stringVec pack;
+  Config *config = Config::instance();
+
+  switch(cmd.size()){
+  case 1:
+    screen::wrongArgumentsNumber("-a | --archive");
+    return 0;
+
+  case 2:
+    pack = config->getPack(cmd[1]);
+    return tarCompress.creat(
+      PathConfig::getDefaultDirectory(), cmd[1],
+      pack.begin(), pack.end()
+    );
+
+  case 3:
+    pack = config->getPack(cmd[1]);
+    return tarCompress.creat(
+      cmd[1], cmd[2], pack.begin(), pack.end()
+    );
+
+  default:
+    screen::wrongArgumentsNumber("-a | --archive");
+    return 0;
+  }
+}
+
+
+bool
+Control::execArchiveExtract(const stringDeq& cmd)
+{
+  if(cmd.size() != 2){
+    screen::wrongArgumentsNumber("-a | --archive");
+    return 0;
+  }
+  TarCompress tarCompress;
+  Path path = PathConfig::getDefaultDirectory() + cmd[1] + ".tar";
+  return tarCompress.extract(path.getPath());
+}
+
+
+bool
+Control::execNetwork(const stringDeq& cmd)
+{
+  auto subCmd = networkMap.find(cmd[0])->second;
+  switch(subCmd){
+  case UNKNOWN_COMMAND:
+    screen::incorrectSubcommand("-n | --network", cmd.front());
+    return 0;
+
+  case DOWNLOAD:
+    return execNetworkDownload(cmd);
+
+  default:
+    screen::incorrectSubcommand("-n | --network", cmd.front());
+    return 0;
+  }
+}
+
+
+bool
+Control::execNetworkDownload(const stringDeq& cmd)
+{
+  if(cmd.size() != 3){
+    screen::wrongArgumentsNumber("-n | --network");
+    return 0;
+  }
+  Network network(cmd[1]);
+  network.download(cmd[2]);
+  return 1;
+}
 
 
 template<class MAP> Control::CTRL_COMMAND

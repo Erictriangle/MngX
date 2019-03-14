@@ -9,10 +9,15 @@ namespace mngx
 class PathConfig : public Path
 {
 private:
-  const std::string HOME = "/home/";
-  const std::string FOLDER = ".mngx";
-  const std::string FILENAME = "MngConfig";
-  const std::string EXTENSION = ".txt";
+  static const std::string HOME;
+  static const std::string FOLDER;
+  static const std::string FILENAME;
+  static const std::string EXTENSION;
+
+public:
+  static const std::string getDefaultPath();
+  static const std::string getDefaultDirectory();
+  static const std::string getDefaultFilename();
 
 public:
   PathConfig();
@@ -27,10 +32,6 @@ public:
   virtual void setPath(const std::string& path) override;
   virtual void setPath(const Path& path) override;
   virtual const std::string getPath() const override;
-
-  const std::string getDefaultPath() const;
-  const std::string getDefaultDirectory() const;
-  const std::string getDefaultFilename() const;
 
   bool empty() const;
 

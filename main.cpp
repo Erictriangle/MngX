@@ -19,7 +19,6 @@ int main(int argc, char** argv)
 	while(!control.empty() && control.status() 
       && mngx::Control::execCommand(control));
 
-    
   }
   catch(const std::system_error& e)
   {

@@ -67,8 +67,8 @@ private:
   bool readEntireFile();
   bool save();
 
-  bool rowIsRepeat(const SECTION section, const std::string& row);
-  bool repeatInPack(const std::string& packName, const std::string& path);
+  bool rowIsRepeat(const SECTION section, const std::string& row) const;
+  bool repeatInPack(const std::string& packName, const std::string& path) const;
 
   std::unique_ptr<std::ofstream> oFile();
   std::unique_ptr<std::ifstream> isFile();

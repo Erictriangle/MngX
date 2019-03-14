@@ -4,30 +4,21 @@ namespace mngx
 {
 
 TarCompress::TarCompress(const TarCompress& tarCompress)
-  :m_source(tarCompress.m_source)
+  : source(tarCompress.source)
 {
 }
 
 
 TarCompress::TarCompress(const std::string& source)
 {
-  m_source.push_back(source);
-}
-
-
-template<class BeginIterator, class EndIterator>
-TarCompress::TarCompress(BeginIterator begin, EndIterator end)
-{
-  std::for_each(begin, end, [&](const std::string& str){
-    m_source.push_back(str);
-  });
+  this->source.push_back(source);
 }
 
 
 TarCompress&
 TarCompress::operator=(const TarCompress& tarCompress)
 {
-  m_source = tarCompress.m_source;
+  this->source = tarCompress.source;
   return *this;
 }
 
@@ -35,8 +26,8 @@ TarCompress::operator=(const TarCompress& tarCompress)
 TarCompress&
 TarCompress::operator=(const std::string& source)
 {
-  m_source.clear();
-  m_source.push_back(source);
+  this->source.clear();
+  this->source.push_back(source);
   return *this;
 }
 
@@ -44,7 +35,7 @@ TarCompress::operator=(const std::string& source)
 void
 TarCompress::add(const std::string& source)
 {
-  m_source.push_back(source);
+  this->source.push_back(source);
 }
 
 
@@ -52,7 +43,7 @@ template<class BeginIterator, class EndIterator> void
 TarCompress::add(BeginIterator begin, EndIterator end)
 {
   std::for_each(begin, end, [&](const std::string& str){
-    m_source.push_back(str);
+    source.push_back(str);
   });
 }
 
@@ -63,27 +54,7 @@ TarCompress::creat(const std::string& destination)
   std::string command{ TAR + " " + CREAT + FILE + " "
     + destination + " "};
 
-  for(auto src : m_source){
-    command += src + " ";
-  }
-  std::system(command.c_str());
-
-  //TODO - check creat archive is done
-  return 1;
-}
-
-
-template<class BeginIterator, class EndIterator> bool
-TarCompress::creat(const std::string& destination,
-  BeginIterator begin, EndIterator end)
-{
-  clear();
-  add(begin, end);
-
-  std::string command{ TAR + " " + CREAT + FILE + " "
-   + destination + " "};
-   
-  for(auto src : m_source){
+  for(auto src : source){
     command += src + " ";
   }
   std::system(command.c_str());
@@ -94,11 +65,10 @@ TarCompress::creat(const std::string& destination,
 
 
 bool
-TarCompress::extract(const std::string& source,
-  const std::string& destination = "")
+TarCompress::extract(const std::string& source)
 {
-  std::string command{ TAR  + " " + EXTRACT + FILE + " " + source
-    + " " + destination};
+  std::string command{ TAR  + " -" + EXTRACT + FILE + " " + source
+    + " -" + DESTINATION + "/" };
 
   std::system(command.c_str());
 
@@ -110,7 +80,7 @@ TarCompress::extract(const std::string& source,
 void
 TarCompress::clear()
 {
-  m_source.clear();
+  source.clear();
 }
 
 

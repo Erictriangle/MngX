@@ -4,6 +4,37 @@
 namespace mngx
 {
 
+
+const std::string PathConfig::HOME = "/home/";
+const std::string PathConfig::FOLDER = ".mngx";
+const std::string PathConfig::FILENAME = "MngConfig";
+const std::string PathConfig::EXTENSION = ".txt";
+
+
+const std::string
+PathConfig::getDefaultPath()
+{
+  std::string username = getenv("USER");
+  return HOME + username + "/" + FOLDER + "/" +
+    FILENAME + EXTENSION;
+}
+
+
+const std::string
+PathConfig::getDefaultDirectory()
+{
+  std::string username = getenv("USER");
+  return HOME + username + "/" + FOLDER + "/";
+}
+
+
+const std::string
+PathConfig::getDefaultFilename()
+{
+  return FILENAME + EXTENSION;
+}
+
+
 PathConfig::PathConfig()
 {
   setDefault();
@@ -96,30 +127,6 @@ PathConfig::getPath() const
   return (path.directory.native().back() == '/')
     ? path.directory.native() + path.filename.native()
     : path.directory.native() + '/' + path.filename.native();
-}
-
-
-const std::string
-PathConfig::getDefaultPath() const
-{
-  std::string username = getenv("USER");
-  return HOME + username + "/" + FOLDER + "/" +
-    FILENAME + EXTENSION;
-}
-
-
-const std::string
-PathConfig::getDefaultDirectory() const
-{
-  std::string username = getenv("USER");
-  return HOME + username + "/" + FOLDER;
-}
-
-
-const std::string
-PathConfig::getDefaultFilename() const
-{
-  return FILENAME + EXTENSION;
 }
 
 

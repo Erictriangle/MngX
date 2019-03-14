@@ -6,6 +6,8 @@
 #include "path_config.hpp"
 #include "config.hpp"
 #include "screen.hpp"
+#include "tar_compress.hpp"
+#include "network.hpp"
 
 #include <string>
 #include <deque>
@@ -27,6 +29,7 @@ private:
     std::deque<std::string> arguments;
   };
 
+  typedef std::vector<std::string> stringVec;
   typedef std::deque<std::string> stringDeq;
   typedef std::deque<command> commandDeq;
 
@@ -37,6 +40,7 @@ public:
     HELP,
     CONFIG,
     ARCHIVE,
+    NETWORK,
 
     //subcommand
     CREAT,
@@ -50,16 +54,24 @@ public:
     CREAT_PACK,
     REMOVE_PACK,
     ADD_DIRECTORY,
-    REMOVE_DIRECTORY
+    REMOVE_DIRECTORY,
 
     //archive subcommand
+    EXTRACT,
+    UPDATE,
 
+    //network subcommand
+    SEND,
+    DOWNLOAD,
+    CHECK
   };
 
 private:
   static const std::map<std::string, CTRL_COMMAND> flagMap;
   static const std::map<std::string, CTRL_COMMAND> helpMap;
   static const std::map<std::string, CTRL_COMMAND> configMap;
+  static const std::map<std::string, CTRL_COMMAND> archiveMap;
+  static const std::map<std::string, CTRL_COMMAND> networkMap;
 
 public:
   static bool execCommand(Control& cmd);
@@ -77,7 +89,13 @@ private:
   static bool execConfigAddDirectory(const stringDeq& cmd);
   static bool execConfigRemoveDirectory(const stringDeq& cmd);
 
-  static bool execArchive(const stringDeq&, Config&);
+  static bool execArchive(const stringDeq& cmd);
+  static bool execArchiveCreat(const stringDeq& cmd);
+  static bool execArchiveExtract(const stringDeq& cmd);
+  static bool execArchiveUpdate(const stringDeq& cmd);
+
+  static bool execNetwork(const stringDeq& cmd);
+  static bool execNetworkDownload(const stringDeq& cmd);
 
   template<class MAP>
   static CTRL_COMMAND key(const MAP& map, const std::string& key);

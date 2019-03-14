@@ -288,6 +288,10 @@ Config::getPack(const std::string& packName) const
   auto fc = fileContent.cbegin();
   auto sectionStr = sectionStringMap.find(ARCHIVE)->second;
 
+  if(!rowIsRepeat(ARCHIVE, PACK + packName)){
+    return temp;
+  }
+
   while(*fc != sectionStr){
     fc++;
   }
@@ -298,8 +302,9 @@ Config::getPack(const std::string& packName) const
   fc++;
 
   while(fc != fileContent.cend() && fc->substr(0,5) != PACK 
-      && stringSectionMap.count(*fc)){
+      && !stringSectionMap.count(*fc)){
     temp.push_back(*fc);
+    fc++;
   }
   return temp;
 }
@@ -346,7 +351,7 @@ Config::save()
 
 
 bool
-Config::rowIsRepeat(const SECTION section, const std::string& row)
+Config::rowIsRepeat(const SECTION section, const std::string& row) const
 {
   auto fc = fileContent.cbegin();
   auto end = fileContent.cend();
@@ -371,7 +376,7 @@ Config::rowIsRepeat(const SECTION section, const std::string& row)
 
 
 bool
-Config::repeatInPack(const std::string& packName, const std::string& path)
+Config::repeatInPack(const std::string& packName, const std::string& path) const
 {
   auto fc = fileContent.cbegin();
   auto end = fileContent.cend();
