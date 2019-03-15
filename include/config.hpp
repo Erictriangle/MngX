@@ -14,7 +14,19 @@
 #include <algorithm>
 #include <iostream>
 
-//TODO - consistency of the file
+
+/*
+*
+* Config creat and modify config file.
+*
+* Row - one row, may contain section or simple option.
+* Pack - grouped paths, wich create one archive files.
+*
+*/
+
+
+//TODO - consistency of the config file
+//TODO - applicable to general options
 
 namespace mngx
 {
@@ -70,6 +82,7 @@ private:
   bool rowIsRepeat(const SECTION section, const std::string& row) const;
   bool repeatInPack(const std::string& packName, const std::string& path) const;
 
+  //Aviod setting flags permanently
   std::unique_ptr<std::ofstream> oFile();
   std::unique_ptr<std::ifstream> isFile();
 

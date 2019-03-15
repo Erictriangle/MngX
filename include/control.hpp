@@ -18,6 +18,13 @@
 #include <boost/algorithm/string.hpp>
 
 
+/*
+*
+*Control - app control flow.
+*
+*/
+
+
 namespace mngx
 {
 class Control
