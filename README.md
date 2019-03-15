@@ -7,8 +7,8 @@ Main goal is self-development.
 ## Getting Started
 
 Project requires:
-</br>-Boost C++ Libraries (min. 1.67.0)
-</br>-CMake build system (min. 2.8.12).
+</br>- Boost C++ Libraries (min. 1.67.0)
+</br>- CMake build system (min. 2.8.12).
 
 Prefix to the Boost library should be manually set
 inside CMakeLists.txt file.
@@ -19,17 +19,17 @@ inside CMakeLists.txt file.
 The project is still being created.
 
 In progress:
-    </br>-server and client module;
-    </br>-improvment of existing solution.
+    </br>- server and client module;
+    </br>- improvment of existing solution.
 
 Planned goals:
-    -graphical user interface (QT library).
+    </br>- graphical user interface (QT library).
 
 ## Tools
 
 report.py - simple script to run unit test inside
             project ("ut_*" executable files) and
-            </br>print "TODO" list from source and 
+            </br>- print "TODO" list from source and 
             header files.
 
 
