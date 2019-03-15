@@ -19,8 +19,8 @@ inside CMakeLists.txt file.
 The project is still being created.
 
 In progress:
-    -server and client module;
-    -improvment of existing solution.
+    </br>-server and client module;
+    </br>-improvment of existing solution.
 
 Planned goals:
     -graphical user interface (QT library).
@@ -29,7 +29,7 @@ Planned goals:
 
 report.py - simple script to run unit test inside
             project ("ut_*" executable files) and
-            print "TODO" list from source and 
+            </br>print "TODO" list from source and 
             header files.
 
 
