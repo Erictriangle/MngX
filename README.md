@@ -18,18 +18,18 @@ inside CMakeLists.txt file.
 
 The project is still being created.
 
-In progress:
-    </br>- server and client module;
-    </br>- improvment of existing solution.
+In progress:</br>
+    - server and client module;</br>
+    - improvment of existing solution. 
 
-Planned goals:
-    </br>- graphical user interface (QT library).
+Planned goals:</br>
+    - graphical user interface (QT library).
 
 ## Tools
 
 report.py - simple script to run unit test inside
-            project ("ut_*" executable files) and
-            </br>- print "TODO" list from source and 
+            project ("ut_*" executable files) and </br>
+            print "TODO" list from source and 
             header files.
 
 
