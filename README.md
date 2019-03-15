@@ -6,9 +6,7 @@ Main goal is self-development.
 
 ## Getting Started
 
-Project requires: 
--Boost C++ Libraries (min. 1.67.0)
--CMake build system (min. 2.8.12).
+Project requires:  -Boost C++ Libraries (min. 1.67.0)  -CMake build system (min. 2.8.12).
 
 Prefix to the Boost library should be manually set
 inside CMakeLists.txt file.
